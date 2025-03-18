@@ -1,0 +1,119 @@
+@extends('layouts.app')
+
+@section('content')
+
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Users</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main content -->
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                
+                @if (session('status'))
+                    <div class="alert alert-success">{{ session('status') }}</div>
+                @endif
+                
+                <!-- Add User Button -->
+                <div class="d-flex justify-content-end">
+                    <a href="{{ route('users.create') }}" class="btn btn-primary mb-2">Add User</a>
+                </div>
+
+                <!-- Users Table -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Options</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($users as $index => $user)
+                                    <tr>
+                                        <td>{{ $index + 1 }}</td>
+                                        <td>{{ $user->first_name }}</td>
+                                        <td>{{ $user->last_name }}</td>
+                                        <td>{{ $user->email }}</td>
+                                        <td>{{ $user->user_role }}</td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <a href="{{ route('users.edit', ['id' => base64_encode(Crypt::encryptString($user->id))]) }}" 
+                                                    class="btn btn-sm btn-success me-2">Edit</a>
+                                                    
+                                                <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#archiveModal" 
+                                                    data-id="{{ $user->id }}" data-name="{{ $user->first_name }} {{ $user->last_name }}">
+                                                    Archive
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Archive Confirmation Modal -->
+<div class="modal fade" id="archiveModal" tabindex="-1" aria-labelledby="archiveModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="archiveModalLabel">Confirm Archive</h5>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to archive <strong id="userName"></strong>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="archiveForm" method="POST" action="">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">Archive</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript to Handle Archive Modal -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const archiveButtons = document.querySelectorAll('[data-bs-target="#archiveModal"]');
+        const userNameField = document.getElementById('userName');
+        const archiveForm = document.getElementById('archiveForm');
+
+        archiveButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const userName = this.getAttribute('data-name');
+                const userId = this.getAttribute('data-id');
+                userNameField.textContent = userName;
+
+                // Fix URL construction
+                archiveForm.action = "{{ url('users/archive') }}/" + userId;
+            });
+        });
+    });
+</script>
+
+@endsection
