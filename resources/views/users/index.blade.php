@@ -4,7 +4,7 @@
 
 <!-- Content Header (Page header) -->
 <div class="content-header">
-    <div class="container-fluid">
+    <div class="container">
         <div class="row mb-2">
             <div class="col-sm-6">
                 <h1 class="m-0">Users</h1>
@@ -15,17 +15,31 @@
 
 <!-- Main content -->
 <div class="content">
-    <div class="container-fluid">
+    <div class="container">
         <div class="row">
             <div class="col-lg-12">
                 
-                @if (session('status'))
-                    <div class="alert alert-success">{{ session('status') }}</div>
+                <!-- Alert Box for Success -->
+                @if (session('success'))
+                    <div class="alert alert-success alert-dismissible fade show">
+                        <i class="bi bi-check-circle me-2"></i>
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
+                <!-- Alert Box for Errors-->
+                @if (session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show">
+                        <i class="bi bi-exclamation-diamond me-2"></i>
+                        {{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                 @endif
                 
                 <!-- Add User Button -->
                 <div class="d-flex justify-content-end">
-                    <a href="{{ route('users.create') }}" class="btn btn-primary mb-2">Add User</a>
+                    <a href="{{ route('users.create') }}" class="btn btn-dark mb-2"><i class="bi bi-plus-lg me-2"></i>Add User</a>
                 </div>
 
                 <!-- Users Table -->
@@ -44,7 +58,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($users as $index => $user)
+                                    @forelse ($users as $index => $user)
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $user->first_name }}</td>
@@ -53,17 +67,20 @@
                                         <td>{{ $user->user_role }}</td>
                                         <td>
                                             <div class="d-flex">
-                                                <a href="{{ route('users.edit', ['id' => base64_encode(Crypt::encryptString($user->id))]) }}" 
-                                                    class="btn btn-sm btn-success me-2">Edit</a>
-                                                    
+                                                <a href="{{ route('users.edit', ['id' => $user->id]) }}" class="btn btn-sm btn-success me-2"><i class="bi bi-pencil-square me-2"></i>Edit</a>
+  
                                                 <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#archiveModal" 
                                                     data-id="{{ $user->id }}" data-name="{{ $user->first_name }} {{ $user->last_name }}">
-                                                    Archive
+                                                    <i class="bi bi-archive me-2"></i>Archive
                                                 </button>
                                             </div>
                                         </td>
                                     </tr>
-                                    @endforeach
+                                    @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center">No record found</td>
+                                    </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>

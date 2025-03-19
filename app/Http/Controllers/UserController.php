@@ -54,16 +54,17 @@ class UserController extends Controller
         ]);
         */
 
-        return redirect()->route('users.index')->with('status', 'User Added Successfully');
+        return redirect()->route('users.index')->with('success', 'User Added Successfully');
     }
 
-    public function edit($encodedId)
+    public function edit($id)
     {
-        $id = Crypt::decryptString(base64_decode($encodedId)); // Decode and decrypt
         $user = User::findOrFail($id);
 
-        return view('users.edit', ['editdata' => $user, 'key' => $encodedId]);
+        return view('users.edit', ['editdata' => $user, 'key' => $id]);
     }
+
+    
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
@@ -89,7 +90,7 @@ class UserController extends Controller
             'action' => 'Updated user: ' . $validatedData['email']
         ]);
 
-        return redirect('users')->with('status', 'User Updated Successfully');
+        return redirect('users')->with('success', 'User Updated Successfully');
     }
 
     public function archive($id)
@@ -102,6 +103,6 @@ class UserController extends Controller
 
         $user->delete();
 
-        return redirect()->route('users.index')->with('status', 'User archived successfully.');
+        return redirect()->route('users.index')->with('success', 'User archived successfully.');
     }
 }

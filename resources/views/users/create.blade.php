@@ -4,7 +4,7 @@
 
 <!-- Content Header (Page header) -->
 <div class="content-header">
-    <div class="container-fluid">
+    <div class="container">
         <div class="row mb-2">
             <div class="col-sm-6">
                 <h1 class="m-0" style="padding-top: 35px;">Add User</h1>
@@ -16,12 +16,12 @@
 
 <!-- Main content -->
 <div class="content">
-    <div class="container-fluid">
+    <div class="container">
         <div class="row d-flex justify-content-center">
             <div class="col-lg-12">
 
                 <div class="d-flex justify-content-end mb-2">
-                    <a href="{{ route('users.index') }}" class="btn btn-danger">Back</a>
+                    <a href="{{ route('users.index') }}" class="btn btn-danger"><i class="bi bi-arrow-return-left me-2"></i>Back</a>
                 </div>
 
                 <!-- Add User Form -->
@@ -114,7 +114,7 @@
 
                             <!-- Submit button -->
                             <div class="form-group mb-3">
-                                <button type="submit" class="btn btn-primary float-end">Add User</button>
+                                <button type="submit" class="btn btn-dark float-end"><i class="bi bi-plus-lg me-2"></i>Add User</button>
                             </div>
 
                         </form>
