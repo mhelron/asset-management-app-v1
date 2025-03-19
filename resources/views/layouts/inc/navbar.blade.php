@@ -26,7 +26,7 @@
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="#" class="sidebar-link">
+                <a href="{{ route('inventory.index') }}" class="sidebar-link">
                     <i class="bi bi-box-seam"></i>
                     <span>Inventory</span>
                 </a>

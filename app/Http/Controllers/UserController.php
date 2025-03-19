@@ -24,7 +24,6 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        // Validate input
         $validatedData = $request->validate([
             'user_role' => 'required',
             'first_name' => 'required|regex:/^[a-zA-Z\s\-]+$/',
@@ -38,7 +37,6 @@ class UserController extends Controller
             ],
         ]);
 
-        // Create user in SQL database
         $user = User::create([
             'user_role' => $validatedData['user_role'],
             'first_name' => $validatedData['first_name'],

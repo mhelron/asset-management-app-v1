@@ -12,7 +12,6 @@
         </div>
     </div>
 </div>
-<!-- /.content-header -->
 
 <!-- Main content -->
 <div class="content">
@@ -39,7 +38,7 @@
                 @endif
 
                 <div class="d-flex justify-content-end">
-                    <a href="{{ route('categories.add') }}" class="btn btn-dark mb-2 float-end"><i class="bi bi-plus-lg me-2"></i>Add Category</a>
+                    <a href="{{ route('categories.create') }}" class="btn btn-dark mb-2 float-end"><i class="bi bi-plus-lg me-2"></i>Add Category</a>
                 </div>
 
                 <!-- Users Table -->
@@ -76,19 +75,17 @@
                                                 <i class="bi bi-pencil-square me-2"></i>Edit
                                             </a>
                                     
-                                            <form action="{{ route('categories.delete', $item->id) }}" method="POST" style="display:inline;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-secondary">
-                                                    <i class="bi bi-archive me-2"></i>Archive
-                                                </button>
-                                            </form>
+                                            <button type="button" class="btn btn-sm btn-secondary archive-btn"
+                                                data-id="{{ $item->id }}" data-name="{{ $item->category }}"
+                                                data-bs-toggle="modal" data-bs-target="#archiveCategoryModal">
+                                                <i class="bi bi-archive me-2"></i> Archive
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="6" class="text-center">No record found</td>
+                                    <td colspan="6" class="text-center">No category found</td>
                                 </tr>
                                 @endforelse
 
@@ -100,7 +97,6 @@
         </div>
     </div>
 </div>
-<!-- /.Main content -->
 
 <!-- View Details Modal -->
 <div class="modal fade" id="viewDetailsModal" tabindex="-1" aria-labelledby="viewDetailsModalLabel" aria-hidden="true">
@@ -134,7 +130,6 @@
     </div>
 </div>
 
-
 <!-- Archive Confirmation Modal -->
 <div class="modal fade" id="archiveCategoryModal" tabindex="-1" aria-labelledby="archiveCategoryModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -159,21 +154,17 @@
 
 <!-- JavaScript to Handle Archive Modal -->
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const archiveButtons = document.querySelectorAll('[data-bs-target="#archiveCategoryModal"]');
-        const categoryNameField = document.getElementById('categoryName');
-        const archiveCategoryForm = document.getElementById('archiveCategoryForm');
+   document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll('.archive-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const categoryId = this.getAttribute('data-id');
+            const categoryName = this.getAttribute('data-name');
 
-        archiveButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const categoryName = this.getAttribute('data-name');
-                const categoryId = this.getAttribute('data-id');
-                categoryNameField.textContent = categoryName;
-                
-                archiveCategoryForm.action = "{{ url('categories/archive-category') }}/" + categoryId;
-            });
+            document.getElementById('categoryName').textContent = categoryName;
+            document.getElementById('archiveCategoryForm').action = `/categories/archive-category/${categoryId}`;
         });
     });
+});
 </script>
 
 <script>
@@ -218,6 +209,5 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 </script>
-
 
 @endsection

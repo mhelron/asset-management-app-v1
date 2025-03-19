@@ -12,9 +12,7 @@ class CategoryController extends Controller
         $categories = Category::all();
         return view('categories.index', compact('categories'));
     }
-
     
-
     public function create()
     {
         return view('categories.create');
@@ -25,6 +23,7 @@ class CategoryController extends Controller
         $category = Category::find($id);
         return response()->json($category ? json_decode($category->custom_fields, true) : []);
     }
+
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -61,7 +60,7 @@ class CategoryController extends Controller
         $editdata = Category::find($id);
 
         if ($editdata) {
-            // Decode the JSON custom fields to an array
+            
             $editdata->custom_fields = json_decode($editdata->custom_fields, true) ?? [];
 
             return view('categories.edit', compact('editdata'));
@@ -110,7 +109,7 @@ class CategoryController extends Controller
         $category = Category::find($id);
 
         if ($category) {
-            $category->delete(); // Soft delete
+            $category->delete();
             return redirect()->route('categories.index')->with('success', 'Category Archived Successfully');
         }
 

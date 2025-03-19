@@ -5,12 +5,12 @@
     <div class="container">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0" style="padding-top: 35px;">Edit Category</h1>
+                <h1 class="m-0">Edit Category</h1>
             </div>
         </div>
     </div>
 </div>
-<!-- /.content-header -->
+
 <!-- Main content -->
 <div class="content">
     <div class="container">

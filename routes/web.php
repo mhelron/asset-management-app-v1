@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\InventoryController;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
 
@@ -14,16 +15,29 @@ Route::prefix('/users')->group(function () {
     Route::post('create-user', [UserController::class, 'store'])->name('users.store');
     Route::get('edit-user/{id}', [UserController::class, 'edit'])->name('users.edit');
     Route::put('update-user/{id}', [UserController::class, 'update'])->name('users.update');
-    Route::delete('/archive/{id}', [UserController::class, 'archive'])->name('users.archive');
+    Route::delete('/archive-user/{id}', [UserController::class, 'archive'])->name('users.archive');
 });
 
 // Categories Route
 Route::prefix('/categories')->group(function () {
     Route::get('/', [CategoryController::class, 'index'])->name('categories.index');
-    Route::get('add-category', [CategoryController::class, 'create'])->name('categories.add');
+    Route::get('add-category', [CategoryController::class, 'create'])->name('categories.create');
     Route::post('add-category', [CategoryController::class, 'store'])->name('categories.store');
     Route::get('edit-category/{id}', [CategoryController::class, 'edit'])->name('categories.edit');
     Route::put('update-category/{id}', [CategoryController::class, 'update'])->name('categories.update');
-    Route::delete('archive-category/{id}', [CategoryController::class, 'archive'])->name('categories.delete');
+    Route::delete('archive-category/{id}', [CategoryController::class, 'archive'])->name('categories.archive');
     Route::get('/get-custom-fields/{id}', [CategoryController::class, 'getCustomFields']);
+});
+
+ // Inventory Route
+ Route::prefix('/inventory')->group(function () {
+    Route::get('/', [InventoryController::class, 'index'])->name('inventory.index');
+    Route::get('add-inventory', [InventoryController::class, 'create'])->name('inventory.create');
+    Route::post('add-inventory', [InventoryController::class, 'store'])->name('inventory.store');
+    Route::get('edit-inventory/{id}', [InventoryController::class, 'edit'])->name('inventory.edit');
+    Route::put('update-inventory/{id}', [InventoryController::class, 'update'])->name('inventory.update');
+    Route::delete('/archive-item/{id}', [InventoryController::class, 'archive'])->name('inventory.archive');
+    Route::get('get-category-fields/{id}', [InventoryController::class, 'getCategoryFields'])->name('inventory.category.fields');
+    Route::get('/get-item-details/{id}', [InventoryController::class, 'getItemDetails']);
+    Route::get('/get-custom-fields/{id}', [InventoryController::class, 'getCustomFields']);
 });

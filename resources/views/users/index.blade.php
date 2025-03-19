@@ -78,7 +78,7 @@
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="6" class="text-center">No record found</td>
+                                        <td colspan="6" class="text-center">No user found</td>
                                     </tr>
                                     @endforelse
                                 </tbody>
@@ -127,7 +127,7 @@
                 userNameField.textContent = userName;
 
                 // Fix URL construction
-                archiveForm.action = "{{ url('users/archive') }}/" + userId;
+                archiveForm.action = "{{ url('users/archive-user') }}/" + userId;
             });
         });
     });

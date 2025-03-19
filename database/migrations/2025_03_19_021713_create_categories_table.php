@@ -18,6 +18,7 @@ return new class extends Migration
             $table->enum('status', ['Active', 'Archived'])->default('Active');
             $table->json('custom_fields')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -27,5 +28,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('categories');
+        Schema::table('categories', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
     }
 };
