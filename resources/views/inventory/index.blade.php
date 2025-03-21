@@ -6,9 +6,15 @@
     <div class="container">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Inventory</h1>
+                <h1 class="m-0">Assets</h1>
             </div>
-        </div>
+            <div class="col-sm-6" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                <ol class="breadcrumb float-end">
+                    <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Assets</li>
+                </ol>
+            </div>
+        </div>  
     </div>
 </div>
 
@@ -45,7 +51,7 @@
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th style="width: 10%;">#</th>
+                                        <th>#</th>
                                         <th>Item</th>
                                         <th>Category</th>
                                         <th>Status</th>

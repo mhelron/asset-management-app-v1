@@ -17,8 +17,14 @@ class UserController extends Controller
         return view('users.index', compact('users'));
     }
 
-    public function create()
+    public function view($id)
     {
+        $user = User::findOrFail($id);
+        return view('users.view', ['user' => $user, 'key' => $id]);
+    }
+
+    public function create()
+    { 
         return view('users.create');
     }
 

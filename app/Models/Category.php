@@ -27,4 +27,9 @@ class Category extends Model
     public function inventory() {
         return $this->hasMany(Inventory::class);
     }
+
+    public function customFields(){
+        return $this->belongsToMany(CustomField::class, 'category_custom_field');
+    }
+
 }

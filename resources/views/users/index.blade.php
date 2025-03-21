@@ -9,6 +9,12 @@
             <div class="col-sm-6">
                 <h1 class="m-0">Users</h1>
             </div>
+            <div class="col-sm-6" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                <ol class="breadcrumb float-end">
+                    <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Users</li>
+                </ol>
+            </div>
         </div>
     </div>
 </div>
@@ -46,7 +52,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-hover">
+                            <table class="table table-striped">
                                 <thead>
                                     <tr>
                                         <th>#</th>
@@ -67,6 +73,8 @@
                                         <td>{{ $user->user_role }}</td>
                                         <td>
                                             <div class="d-flex">
+                                                <a href="{{ route('users.view', ['id' => $user->id]) }}" class="btn btn-sm btn-primary me-2"><i class="bi bi-eye me-2"></i>View</a>
+
                                                 <a href="{{ route('users.edit', ['id' => $user->id]) }}" class="btn btn-sm btn-success me-2"><i class="bi bi-pencil-square me-2"></i>Edit</a>
   
                                                 <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#archiveModal" 

@@ -5,12 +5,14 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\CustomFieldsController;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
 
 // User Routes
 Route::prefix('/users')->group(function () {
     Route::get('/', [UserController::class, 'index'])->name('users.index');
+    Route::get('profile/{id}', [UserController::class, 'view'])->name('users.view');
     Route::get('create-user', [UserController::class, 'create'])->name('users.create');
     Route::post('create-user', [UserController::class, 'store'])->name('users.store');
     Route::get('edit-user/{id}', [UserController::class, 'edit'])->name('users.edit');
@@ -40,4 +42,14 @@ Route::prefix('/categories')->group(function () {
     Route::get('get-category-fields/{id}', [InventoryController::class, 'getCategoryFields'])->name('inventory.category.fields');
     Route::get('/get-item-details/{id}', [InventoryController::class, 'getItemDetails']);
     Route::get('/get-custom-fields/{id}', [InventoryController::class, 'getCustomFields']);
+});
+
+// Custom Fields Route
+Route::prefix('/custom-fields')->group(function () {
+    Route::get('/', [CustomFieldsController::class, 'index'])->name('customfields.index');
+    Route::get('add-custom-field', [CustomFieldsController::class, 'create'])->name('customfields.create');
+    Route::post('add-custom-field', [CustomFieldsController::class, 'store'])->name('customfields.store');
+    Route::get('edit-custom-field/{id}', [CustomFieldsController::class, 'edit'])->name('customfields.edit');
+    Route::put('update-custom-field/{id}', [CustomFieldsController::class, 'update'])->name('customfields.update');
+    Route::delete('archive-custom-field/{id}', [CustomFieldsController::class, 'archive'])->name('customfields.archive');
 });

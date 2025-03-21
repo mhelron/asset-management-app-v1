@@ -4,7 +4,7 @@
         <button class="btn btn-dark me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#staticBackdrop" aria-controls="staticBackdrop">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <a class="navbar-brand" href="#">Asset Management System</a>
+        <a class="navbar-brand" href="{{ route('dashboard.index') }}">Asset Inventory Management System</a>
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             <li class="nav-item">
     
@@ -12,9 +12,9 @@
         </ul>
     </nav>
     
-    <div class="offcanvas offcanvas-start bg-dark" data-bs-backdrop="static" tabindex="-1" id="staticBackdrop" aria-labelledby="staticBackdropLabel">
+    <div class="offcanvas offcanvas-start bg-dark" tabindex="-1" id="staticBackdrop" aria-labelledby="staticBackdropLabel">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="staticBackdropLabel" style="color: fff;">Asset Management System</h5>
+            <h5 class="offcanvas-title" id="staticBackdropLabel" style="color: fff;">Menu</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
     
@@ -22,43 +22,86 @@
             <li class="sidebar-item">
                 <a href="{{ route('dashboard.index') }}" class="sidebar-link">
                     <i class="bi bi-house"></i>
-                    <span>Dashboard</span>
+                    <span class="ms-2">Dashboard</span>
                 </a>
             </li>
             <li class="sidebar-item">
                 <a href="{{ route('inventory.index') }}" class="sidebar-link">
                     <i class="bi bi-box-seam"></i>
-                    <span>Inventory</span>
+                    <span class="ms-2">Assets</span>
                 </a>
             </li>
-            <!--
             <li class="sidebar-item">
-                <a href="#" class="sidebar-link">
-                    <i class="bi bi-shop"></i>
-                    <span>Outlets</span>
+                <a href="" class="sidebar-link">
+                    <i class="bi bi-layers"></i>
+                    <span class="ms-2">Components</span>
                 </a>
             </li>
-            -->
-            <!--
             <li class="sidebar-item">
-                <a href="#" class="sidebar-link">
-                    <i class="bi bi-building"></i>
-                    <span>Departments</span>
-                </a>
-            </li>
-                    -->
-            <li class="sidebar-item">
-                <a href="{{ route('categories.index')}}" class="sidebar-link">
-                    <i class="bi bi-folder"></i>
-                    <span>Categories</span>
+                <a href="" class="sidebar-link">
+                    <i class="bi bi-headphones"></i>
+                    <span class="ms-2">Accessories</span>
                 </a>
             </li>
             <li class="sidebar-item">
                 <a href="{{ route('users.index') }}" class="sidebar-link">
                     <i class="bi bi-people"></i>
-                    <span>Users</span>
+                    <span class="ms-2">Users</span>
                 </a>
             </li>
+            <li class="sidebar-item">
+                <a href="#settingsCollapse" class="sidebar-link d-flex align-items-center" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="settingsCollapse">
+                    <i class="bi bi-gear"></i>
+                    <span class="ms-2">Settings</span>
+                    <i class="bi bi-chevron-left ms-auto chevron-icon"></i>
+                </a>
+                <div class="collapse sidebar-collapse" id="settingsCollapse">
+                    <ul class="sidebar-submenu">
+                        <li class="sidebar-item">
+                            <a href="{{ route('customfields.index') }}" class="sidebar-link">
+                                <i class="bi bi-wrench"></i>
+                                <span class="ms-2">Custom Fields</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="{{ route('categories.index')}}" class="sidebar-link">
+                                <i class="bi bi-folder"></i>
+                                <span class="ms-2">Categories</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="#" class="sidebar-link">
+                                <i class="bi bi-bank"></i>
+                                <span class="ms-2">Departments</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li> 
+            <li class="sidebar-item">
+                <a href="#settingsACollapse" class="sidebar-link d-flex align-items-center" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="settingsACollapse">
+                    <i class="bi bi-graph-up-arrow"></i>
+                    <span class="ms-2">Reports</span>
+                    <i class="bi bi-chevron-left ms-auto chevron-icon"></i>
+                </a>
+                <div class="collapse sidebar-collapse" id="settingsACollapse">
+                    <ul class="sidebar-submenu">
+                        <li class="sidebar-item">
+                            <a href="#" class="sidebar-link">
+                                <i class="bi bi-bootstrap-fill"></i>
+                                <span>Sample</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="#" class="sidebar-link">
+                                <i class="bi bi-bootstrap-fill"></i>
+                                <span>Sample</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>                      
+                    
         </ul>
     
         <div class="sidebar-footer">

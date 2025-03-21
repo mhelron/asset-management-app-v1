@@ -62,3 +62,36 @@ a.sidebar-link:hover {
     background-color: rgba(255, 255, 255, 0.1);
     color: #fff;
 }
+
+/* Collapsed Sidebar Menu */
+.sidebar-collapse {
+    padding-left: 20px; /* Indent submenu items */
+}
+
+/* Submenu Styling */
+.sidebar-submenu {
+    list-style: none;
+    padding-left: 10px;
+    margin: 0;
+}
+
+.sidebar-submenu .sidebar-link {
+    padding-left: 40px; /* Align submenu items properly */
+    font-size: 14px; /* Smaller text for submenu */
+}
+
+/* Chevron Rotation */
+.sidebar-link[aria-expanded="true"] .bi-chevron-down {
+    transform: rotate(180deg);
+    transition: transform 0.3s ease;
+}
+
+/* Chevron points left by default */
+.sidebar-link .chevron-icon {
+    transition: transform 0.3s ease;
+}
+
+/* When expanded, rotate the chevron downwards */
+.sidebar-link[aria-expanded="true"] .chevron-icon {
+    transform: rotate(-90deg); /* Rotates chevron to point down */
+}

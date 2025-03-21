@@ -7,7 +7,14 @@
     <div class="container">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0" style="padding-top: 35px;">Add User</h1>
+                <h1 class="m-0">Add User</h1>
+            </div>
+            <div class="col-sm-6" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                <ol class="breadcrumb float-end">
+                    <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="#">Users</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Add User</li>
+                </ol>
             </div>
         </div>
     </div>

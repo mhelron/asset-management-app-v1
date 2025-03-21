@@ -9,6 +9,13 @@
 			<div class="col-sm-6">
 				<h1 class="m-0" style="padding-top: 35px;">Edit User</h1>
 			</div>
+			<div class="col-sm-6" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                <ol class="breadcrumb float-end">
+                    <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="#">Users</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Edit User</li>
+                </ol>
+            </div>
         </div>
      </div>
 </div>

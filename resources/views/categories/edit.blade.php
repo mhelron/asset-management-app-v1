@@ -7,6 +7,13 @@
             <div class="col-sm-6">
                 <h1 class="m-0">Edit Category</h1>
             </div>
+            <div class="col-sm-6" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                <ol class="breadcrumb float-end">
+                    <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="#">Categories</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Edit Category</li>
+                </ol>
+            </div>
         </div>
     </div>
 </div>
