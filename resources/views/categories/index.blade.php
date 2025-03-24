@@ -51,15 +51,15 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-hover">
+                            <table class="table table-striped">
 
                                 <thead>
                                     <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">Category Name</th>
-                                        <th scope="col">Description</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Options</th>
+                                        <th>#</th>
+                                        <th>Category Name</th>
+                                        <th>Description</th>
+                                        <th>Status</th>
+                                        <th>Options</th>
                                     </tr>
                                 </thead>
 
@@ -73,7 +73,7 @@
 
                                     <td>
                                         <div class="d-flex">
-                                            <button type="button" class="btn btn-sm btn-primary me-2 view-details-btn"
+                                            <button type="button" class="btn btn-sm btn-dark me-2 view-details-btn"
                                                 data-id="{{ $item->id }}" data-name="{{ $item->category }}">
                                                 <i class="bi bi-eye me-2"></i>View Details
                                             </button>
@@ -91,7 +91,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="5" class="text-center">No category found</td>
+                                    <td colspan="4" class="text-center">No category found</td>
                                 </tr>
                                 @endforelse
 

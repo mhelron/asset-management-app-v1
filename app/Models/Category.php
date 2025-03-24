@@ -22,4 +22,9 @@ class Category extends Model
     protected $casts = [
         'custom_fields' => 'array'
     ];
+
+    public function customFields()
+    {
+         return $this->hasMany(CustomField::class);
+    }
 }

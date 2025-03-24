@@ -60,11 +60,15 @@ class CategoryController extends Controller
 
     public function edit($id)
     {
-        $editdata = Category::with('customFields')->find($id);
-        $customFields = CustomField::all(); // Fetch all custom fields
-
+        $editdata = Category::find($id);
+        $customFields = CustomField::all();
+        
+        // If you need to get the actual CustomField models based on IDs stored in JSON
+        $selectedCustomFieldIds = json_decode($editdata->custom_fields, true) ?? [];
+        $selectedCustomFields = CustomField::whereIn('id', $selectedCustomFieldIds)->get();
+        
         if ($editdata) {
-            return view('categories.edit', compact('editdata', 'customFields'));
+            return view('categories.edit', compact('editdata', 'customFields', 'selectedCustomFields'));
         }
 
         return redirect('categories')->with('error', 'Item ID Not Found');
