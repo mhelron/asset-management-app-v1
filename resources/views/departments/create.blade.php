@@ -20,7 +20,7 @@
             <div class="col-lg-12">
 
                 <div class="d-flex justify-content-end mb-2">
-                    <a href="{{ route('departments.index') }}" class="btn btn-danger">Back</a>
+                    <a href="{{ route('departments.index') }}" class="btn btn-danger"><i class="bi bi-arrow-return-left me-2"></i>Back</a>
                 </div>
 
                 <!-- Add Department Form -->
@@ -40,6 +40,17 @@
                                 </div>
                             </div>
 
+                            <!-- Location -->
+                            <div class="col-md-12">
+                                <div class="form-group mb-3">
+                                    <label>Location <span class="text-danger"> *</span></label>
+                                    <input type="text" name="location" value="{{ old('location') }}" class="form-control" placeholder="Enter department location">
+                                    @error('location')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+
                             <!-- Description -->
                             <div class="col-md-12">
                                 <div class="form-group mb-3">
@@ -53,7 +64,7 @@
 
                             <!-- Submit button -->
                             <div class="form-group mb-3">
-                                <button type="submit" class="btn btn-primary float-end">Add Department</button>
+                                <button type="submit" class="btn btn-dark float-end"><i class="bi bi-plus-lg me-2"></i>Add Department</button>
                             </div>
 
                         </form>

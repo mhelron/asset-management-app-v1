@@ -23,15 +23,17 @@ class DepartmentController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'desc' => 'required|string',
+            'location' => 'required|string',
         ]);
 
-        $department = Department::create([
+        Department::create([
             'name' => $validatedData['name'],
             'desc' => $validatedData['desc'],
+            'location' => $validatedData['location'],
             'status' => 'Active',
         ]);
 
-        return redirect('departments')->with('status', 'Department Added Successfully');
+        return redirect('departments')->with('success', 'Department Added Successfully');
     }
 
     public function edit($id)
@@ -45,13 +47,14 @@ class DepartmentController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'desc' => 'required|string',
+            'location' => 'required|string',
             'status' => 'required|string',
         ]);
 
         $department = Department::findOrFail($id);
         $department->update($validatedData);
 
-        return redirect('departments')->with('status', 'Department Updated Successfully');
+        return redirect('departments')->with('success', 'Department Updated Successfully');
     }
 
     public function archive($id)
@@ -59,6 +62,6 @@ class DepartmentController extends Controller
         $department = Department::findOrFail($id);
         $department->delete(); // Soft delete (archives the department)
 
-        return redirect('departments')->with('status', 'Department Archived Successfully');
+        return redirect('departments')->with('success', 'Department Archived Successfully');
     }
 }

@@ -20,17 +20,21 @@
         <div class="row">
             <div class="col-lg-12">
 
-                <!-- Bootstrap Toast -->
-                @if (session('status'))
-                    <div class="toast-container position-fixed top-0 end-0 p-3">
-                        <div class="toast text-bg-light border border-dark custom-toast-size" role="alert" aria-live="assertive" aria-atomic="true">
-                            <div class="d-flex">
-                                <div class="toast-body">
-                                    {{ session('status') }}
-                                </div>
-                                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                            </div>
-                        </div>
+                <!-- Alert Box for Success -->
+                @if (session('success'))
+                    <div class="alert alert-success alert-dismissible fade show">
+                        <i class="bi bi-check-circle me-2"></i>
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
+                <!-- Alert Box for Errors-->
+                @if (session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show">
+                        <i class="bi bi-exclamation-diamond me-2"></i>
+                        {{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
 
@@ -47,8 +51,8 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Department</th>
-                                        <th>User Assigned</th>
                                         <th>Location</th>
+                                        <th>Description</th>
                                         <th>Status</th>
                                         <th>Options</th>
                                     </tr>
@@ -58,17 +62,16 @@
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $department->name }}</td>
-                                        <td></td>
+                                        <td>{{ $department->location }}</td>
                                         <td>{{ $department->desc }}</td>
                                         <td>{{ $department->status }}</td>
                                         <td>
                                             <div class="d-flex">
                                                 <a href="{{ route('departments.edit', $department->id) }}" class="btn btn-sm btn-success me-2"><i class="bi bi-pencil-square me-2"></i>Edit</a>
-                                                <form action="{{ route('departments.archive', $department->id) }}" method="POST">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-secondary"><i class="bi bi-archive me-2"></i>Archive</button>
-                                                </form>
+                                                <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#archiveModal" 
+                                                    data-id="{{ $department->id }}" data-name="{{ $department->name }}">
+                                                    <i class="bi bi-archive me-2"></i>Archive
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -87,5 +90,47 @@
     </div>
 </div>
 <!-- /.Main content -->
+
+<!-- Archive Confirmation Modal -->
+<div class="modal fade" id="archiveModal" tabindex="-1" aria-labelledby="archiveModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="archiveModalLabel">Confirm Archive</h5>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to archive <strong id="fieldName"></strong>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="archiveForm" method="POST" action="">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">Archive</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript to Handle Archive Modal -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const archiveButtons = document.querySelectorAll('[data-bs-target="#archiveModal"]');
+        const fieldNameElement = document.getElementById('fieldName');
+        const archiveForm = document.getElementById('archiveForm');
+
+        archiveButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const fieldName = this.getAttribute('data-name');
+                const fieldId = this.getAttribute('data-id');
+                fieldNameElement.textContent = fieldName;
+
+                // Fix URL construction
+                archiveForm.action = "{{ url('departments/archive-department/') }}/" + fieldId;
+            });
+        });
+    });
+</script>
 
 @endsection

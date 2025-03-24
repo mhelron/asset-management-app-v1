@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('departments', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
+            $table->string('location');
             $table->text('desc')->nullable();
             $table->enum('status', ['Active', 'Inactive'])->default('Active');
             $table->softDeletes();
