@@ -11,8 +11,8 @@
             </div>
             <div class="col-sm-6" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                 <ol class="breadcrumb float-end">
-                    <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="#">Custom Fields</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('customfields.index') }}">Custom Fields</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Add Custom Field</li>
                 </ol>
             </div>

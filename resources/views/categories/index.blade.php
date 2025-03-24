@@ -11,7 +11,7 @@
             </div>
             <div class="col-sm-6" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                 <ol class="breadcrumb float-end">
-                    <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Categories</li>
                 </ol>
             </div>
@@ -91,7 +91,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="4" class="text-center">No category found</td>
+                                    <td colspan="5" class="text-center">No category found</td>
                                 </tr>
                                 @endforelse
 

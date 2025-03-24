@@ -9,8 +9,8 @@
             </div>
             <div class="col-sm-6" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                 <ol class="breadcrumb float-end">
-                    <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="#">Categories</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('categories.index') }}">Categories</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Edit Category</li>
                 </ol>
             </div>
