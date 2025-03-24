@@ -42,7 +42,7 @@
                 @endif
                 
                 <div class="d-flex justify-content-end">
-                    <a href="{{ route('inventory.create') }}" class="btn btn-dark mb-2"><i class="bi bi-plus-lg me-2"></i>Add Inventory</a>
+                    <a href="{{ route('inventory.create') }}" class="btn btn-dark mb-2"><i class="bi bi-plus-lg me-2"></i>Add Asset</a>
                 </div>
 
                 <div class="card">

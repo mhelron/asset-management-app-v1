@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\CustomFieldsController;
+use App\Http\Controllers\DepartmentController;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
 
@@ -52,4 +53,14 @@ Route::prefix('/custom-fields')->group(function () {
     Route::get('edit-custom-field/{id}', [CustomFieldsController::class, 'edit'])->name('customfields.edit');
     Route::put('update-custom-field/{id}', [CustomFieldsController::class, 'update'])->name('customfields.update');
     Route::delete('archive-custom-field/{id}', [CustomFieldsController::class, 'archive'])->name('customfields.archive');
+});
+
+// Department Routes
+Route::prefix('/departments')->group(function () {
+    Route::get('/', [DepartmentController::class, 'index'])->name('departments.index');
+    Route::get('create-department', [DepartmentController::class, 'create'])->name('departments.create');
+    Route::post('create-department', [DepartmentController::class, 'store'])->name('departments.store');
+    Route::get('edit-department/{id}', [DepartmentController::class, 'edit'])->name('departments.edit');
+    Route::put('update-department/{id}', [DepartmentController::class, 'update'])->name('departments.update');
+    Route::delete('/archive-department/{id}', [DepartmentController::class, 'archive'])->name('departments.archive');
 });

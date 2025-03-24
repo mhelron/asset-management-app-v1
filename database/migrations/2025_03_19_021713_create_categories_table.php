@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('category');
             $table->text('desc');
-            $table->enum('status', ['Active', 'Archived'])->default('Active');
+            $table->enum('status', ['Active', 'Inactive'])->default('Active');
             $table->json('custom_fields')->nullable();
             $table->timestamps();
             $table->softDeletes();

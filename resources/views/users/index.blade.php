@@ -73,7 +73,7 @@
                                         <td>{{ $user->user_role }}</td>
                                         <td>
                                             <div class="d-flex">
-                                                <a href="{{ route('users.view', ['id' => $user->id]) }}" class="btn btn-sm btn-primary me-2"><i class="bi bi-eye me-2"></i>View</a>
+                                                <a href="{{ route('users.view', ['id' => $user->id]) }}" class="btn btn-sm btn-dark me-2"><i class="bi bi-eye me-2"></i>View</a>
 
                                                 <a href="{{ route('users.edit', ['id' => $user->id]) }}" class="btn btn-sm btn-success me-2"><i class="bi bi-pencil-square me-2"></i>Edit</a>
   

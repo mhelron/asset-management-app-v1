@@ -4,7 +4,7 @@
         <button class="btn btn-dark me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#staticBackdrop" aria-controls="staticBackdrop">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <a class="navbar-brand" href="{{ route('dashboard.index') }}">Asset Inventory Management System</a>
+        <a class="navbar-brand" href="{{ route('dashboard.index') }}">Asset Inventory Management</a>
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             <li class="nav-item">
     
@@ -20,20 +20,20 @@
     
         <ul class="sidebar-nav">
             <li class="sidebar-item">
-                <a href="{{ route('dashboard.index') }}" class="sidebar-link">
+                <a href="{{ route('dashboard.index') }}" class="sidebar-link {{ request()->routeIs('dashboard.index') ? 'active' : '' }}">
                     <i class="bi bi-house"></i>
                     <span class="ms-2">Dashboard</span>
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="{{ route('inventory.index') }}" class="sidebar-link">
+                <a href="{{ route('inventory.index') }}" class="sidebar-link {{ request()->routeIs('inventory.index', 'inventory.create') ? 'active' : '' }}">
                     <i class="bi bi-box-seam"></i>
                     <span class="ms-2">Assets</span>
                 </a>
             </li>
             <li class="sidebar-item">
                 <a href="" class="sidebar-link">
-                    <i class="bi bi-layers"></i>
+                    <i class="bi bi-boxes"></i>
                     <span class="ms-2">Components</span>
                 </a>
             </li>
@@ -44,40 +44,40 @@
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="{{ route('users.index') }}" class="sidebar-link">
+                <a href="{{ route('users.index') }}" class="sidebar-link {{ request()->routeIs('users.index', 'users.create', 'users.edit') ? 'active' : '' }}"">
                     <i class="bi bi-people"></i>
                     <span class="ms-2">Users</span>
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="#settingsCollapse" class="sidebar-link d-flex align-items-center" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="settingsCollapse">
+                <a href="#settingsCollapse" class="sidebar-link d-flex align-items-center" data-bs-toggle="collapse" role="button" aria-expanded="{{ request()->routeIs('customfields.index') || request()->routeIs('categories.index') || request()->routeIs('departments.index') ? 'true' : 'false' }}" aria-controls="settingsCollapse">
                     <i class="bi bi-gear"></i>
                     <span class="ms-2">Settings</span>
                     <i class="bi bi-chevron-left ms-auto chevron-icon"></i>
                 </a>
-                <div class="collapse sidebar-collapse" id="settingsCollapse">
+                <div class="collapse sidebar-collapse {{ request()->routeIs('customfields.index') || request()->routeIs('categories.index') || request()->routeIs('departments.index') ? 'show' : '' }}" id="settingsCollapse">
                     <ul class="sidebar-submenu">
                         <li class="sidebar-item">
-                            <a href="{{ route('customfields.index') }}" class="sidebar-link">
+                            <a href="{{ route('customfields.index') }}" class="sidebar-link {{ request()->routeIs('customfields.index') ? 'active' : '' }}">
                                 <i class="bi bi-wrench"></i>
                                 <span class="ms-2">Custom Fields</span>
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="{{ route('categories.index')}}" class="sidebar-link">
+                            <a href="{{ route('categories.index') }}" class="sidebar-link {{ request()->routeIs('categories.index') ? 'active' : '' }}">
                                 <i class="bi bi-folder"></i>
                                 <span class="ms-2">Categories</span>
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="#" class="sidebar-link">
-                                <i class="bi bi-bank"></i>
+                            <a href="{{ route('departments.index') }}" class="sidebar-link {{ request()->routeIs('departments.index') ? 'active' : '' }}">
+                                <i class="bi bi-building"></i>
                                 <span class="ms-2">Departments</span>
                             </a>
                         </li>
                     </ul>
                 </div>
-            </li> 
+            </li>
             <li class="sidebar-item">
                 <a href="#settingsACollapse" class="sidebar-link d-flex align-items-center" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="settingsACollapse">
                     <i class="bi bi-graph-up-arrow"></i>

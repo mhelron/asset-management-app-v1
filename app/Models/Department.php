@@ -6,20 +6,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-
-class Category extends Model
+class Department extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'category',
+        'name',
         'desc',
         'status',
-        'custom_fields'
     ];
-    
-    // Add a cast to handle the JSON
-    protected $casts = [
-        'custom_fields' => 'array'
-    ];
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }

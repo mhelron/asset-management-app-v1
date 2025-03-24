@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Category;
+use App\Models\CustomField;
 
 class CategoryController extends Controller
 {
@@ -15,55 +16,55 @@ class CategoryController extends Controller
     
     public function create()
     {
-        return view('categories.create');
+        $customFields = CustomField::all(); // Fetch all custom fields
+        return view('categories.create', compact('customFields'));
     }
 
     public function getCustomFields($id)
     {
         $category = Category::find($id);
-        return response()->json($category ? json_decode($category->custom_fields, true) : []);
+        
+        if (!$category) {
+            return response()->json([]);
+        }
+        
+        // If using custom_fields column in categories table
+        $customFieldIds = json_decode($category->custom_fields, true) ?? [];
+        $customFields = CustomField::whereIn('id', $customFieldIds)->get();
+        
+        return response()->json($customFields);
     }
 
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'category' => 'required',
-            'desc' => 'required',
+        $validated = $request->validate([
+            'category' => 'required|string|max:255',
+            'desc' => 'required|string',
         ]);
-    
-        $customFields = [];
-        if ($request->has('field_names') && is_array($request->field_names)) {
-            foreach ($request->field_names as $index => $fieldName) {
-                if (!empty($fieldName)) {
-                    $customFields[] = [
-                        'name' => $fieldName,
-                        'type' => $request->field_types[$index] ?? 'text',
-                        'is_required' => isset($request->field_required[$index]),
-                        'order' => $index
-                    ];
-                }
-            }
+
+        // Prepare custom fields data
+        $customFieldsJson = null;
+        if ($request->has('custom_fields') && !empty($request->custom_fields)) {
+            $customFieldsJson = json_encode($request->custom_fields);
         }
-    
-        Category::create([
-            'category' => $validatedData['category'],
-            'desc' => $validatedData['desc'],
-            'status' => 'Active',
-            'custom_fields' => json_encode($customFields)
+
+        // Create category with custom fields included
+        $category = Category::create([
+            'category' => $validated['category'],
+            'desc' => $validated['desc'],
+            'custom_fields' => $customFieldsJson
         ]);
-    
-        return redirect('categories')->with('success', 'Category Added Successfully');
+
+        return redirect()->route('categories.index')->with('success', 'Category created successfully.');
     }
 
     public function edit($id)
     {
-        $editdata = Category::find($id);
+        $editdata = Category::with('customFields')->find($id);
+        $customFields = CustomField::all(); // Fetch all custom fields
 
         if ($editdata) {
-            
-            $editdata->custom_fields = json_decode($editdata->custom_fields, true) ?? [];
-
-            return view('categories.edit', compact('editdata'));
+            return view('categories.edit', compact('editdata', 'customFields'));
         }
 
         return redirect('categories')->with('error', 'Item ID Not Found');
@@ -76,28 +77,20 @@ class CategoryController extends Controller
             'desc' => 'required',
             'status' => 'required'
         ]);
-    
-        $customFields = [];
-        if ($request->has('field_names') && is_array($request->field_names)) {
-            foreach ($request->field_names as $index => $fieldName) {
-                if (!empty($fieldName)) {
-                    $customFields[] = [
-                        'name' => $fieldName,
-                        'type' => $request->field_types[$index] ?? 'text',
-                        'is_required' => isset($request->field_required[$index]),
-                        'order' => $index
-                    ];
-                }
-            }
+        
+        // Prepare custom fields data
+        $customFieldsJson = null;
+        if ($request->has('custom_fields') && !empty($request->custom_fields)) {
+            $customFieldsJson = json_encode($request->custom_fields);
         }
-    
+        
         $category = Category::find($id);
         if ($category) {
             $category->update([
                 'category' => $validatedData['category'],
                 'desc' => $validatedData['desc'],
                 'status' => $validatedData['status'],
-                'custom_fields' => json_encode($customFields)
+                'custom_fields' => $customFieldsJson
             ]);
             return redirect('categories')->with('success', 'Category Updated Successfully');
         }

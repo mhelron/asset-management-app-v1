@@ -94,21 +94,21 @@
                             </div>
 
                             <div class="tab-pane fade " id="asset" role="tabpanel" aria-labelledby="user_assets">
-                                <div class="alert alert-warning fade show">
+                                <div class="alert alert-danger fade show">
                                     <i class="bi bi-check-circle me-2"></i>
                                     No asset found
                                 </div>
                             </div>
 
                             <div class="tab-pane fade " id="accessories" role="tabpanel" aria-labelledby="user_accessories">
-                                <div class="alert alert-warning fade show">
+                                <div class="alert alert-danger fade show">
                                     <i class="bi bi-check-circle me-2"></i>
                                     No accessory found
                                 </div>
                             </div>
 
                             <div class="tab-pane fade " id="history" role="tabpanel" aria-labelledby="user_history">
-                                <div class="alert alert-warning fade show">
+                                <div class="alert alert-danger fade show">
                                     <i class="bi bi-check-circle me-2"></i>
                                     No history found
                                 </div>

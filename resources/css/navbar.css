@@ -95,3 +95,9 @@ a.sidebar-link:hover {
 .sidebar-link[aria-expanded="true"] .chevron-icon {
     transform: rotate(-90deg); /* Rotates chevron to point down */
 }
+
+.sidebar-link.active {
+    background-color: rgba(255, 255, 255, 0.2); /* Highlight */
+    color: #fff;
+    border-left: 3px solid #fff;
+}

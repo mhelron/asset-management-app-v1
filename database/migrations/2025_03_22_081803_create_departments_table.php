@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('category_custom_field', function (Blueprint $table) {
+        Schema::create('departments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('category_id')->constrained()->onDelete('cascade');
-            $table->foreignId('custom_field_id')->constrained()->onDelete('cascade');
+            $table->string('name')->unique();
+            $table->text('desc')->nullable();
+            $table->enum('status', ['Active', 'Inactive'])->default('Active');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('category_custom_field');
+        Schema::dropIfExists('departments');
     }
 };

@@ -31,21 +31,23 @@ class CustomFieldsController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'type' => 'required|string|in:text,list,checkbox,radio,select',
-            'text_type' => 'nullable|string|in:text,email,number,image,password,date',
+            'type' => 'required|string|in:Text,List,Checkbox,Radio,Select',
+            'text_type' => 'nullable|string|in:Text,Email,Number,Image,Password,Date',
             'is_required' => 'required|in:0,1',
+            'desc' => 'required|string|max:1000',
             'options' => 'nullable|array',
             'options.*' => 'nullable|string|max:255',
         ]);
 
         // Only store options if the field type requires it
-        $options = in_array($request->type, ['list', 'checkbox', 'radio', 'select']) 
+        $options = in_array($request->type, ['List', 'Checkbox', 'Radio', 'Select']) 
             ? json_encode(array_filter($request->options)) 
             : null;
 
         CustomField::create([
             'name' => $request->name,
             'type' => $request->type,
+            'desc' => $request->desc,
             'text_type' => $request->text_type,
             'is_required' => $request->is_required,
             'options' => $options,
@@ -58,45 +60,56 @@ class CustomFieldsController extends Controller
     /**
      * Show the form for editing the specified custom field.
      */
-    public function edit(CustomField $customField)
+    public function edit($id)
     {
+        $customField = CustomField::findOrFail($id);
         return view('customfields.edit', compact('customField'));
     }
 
     /**
      * Update the specified custom field in storage.
      */
-    public function update(Request $request, CustomField $customField)
+    public function update(Request $request, $id)
     {
+        $customField = CustomField::findOrFail($id);
+
         $request->validate([
             'name' => 'required|string|max:255',
-            'type' => 'required|string|in:text,list,checkbox,radio,select',
-            'text_type' => 'nullable|string|in:text,email,number,image,password,date',
-            'is_required' => 'required|boolean',
+            'type' => 'required|string|in:Text,List,Checkbox,Radio,Select',
+            'text_type' => 'nullable|string|in:Text,Email,Number,Image,Password,Date',
+            'is_required' => 'required|in:0,1',
+            'desc' => 'required|string|max:1000',
             'options' => 'nullable|array',
-            'options.*' => 'string|max:255',
+            'options.*' => 'nullable|string|max:255',
         ]);
 
-        // Convert options to JSON if applicable
-        $options = in_array($request->type, ['list', 'checkbox', 'radio', 'select']) ? json_encode($request->options) : null;
+        $options = in_array($request->type, ['List', 'Checkbox', 'Radio', 'Select']) ? json_encode($request->options) : null;
 
         $customField->update([
             'name' => $request->name,
             'type' => $request->type,
+            'desc' => $request->desc,
             'text_type' => $request->text_type,
             'is_required' => $request->is_required,
             'options' => $options,
         ]);
 
-        return redirect()->route('customfields.index')->with('success', 'Custom Field updated successfully!');
+        return redirect()->route('customfields.index')->with('success', 'Custom field updated successfully'); 
     }
 
     /**
      * Remove the specified custom field from storage.
      */
-    public function destroy(CustomField $customField)
-    {
+    public function archive($id)
+{
+    try {
+        $customField = CustomField::findOrFail($id);
+        
         $customField->delete();
-        return redirect()->route('customfields.index')->with('success', 'Custom Field deleted successfully!');
+        
+        return redirect()->route('customfields.index')->with('success', 'Custom field archived successfully');
+    } catch (\Exception $e) {
+        return redirect()->route('customfields.index')->with('error', 'Failed to archive custom field: ' . $e->getMessage());
     }
+}
 }

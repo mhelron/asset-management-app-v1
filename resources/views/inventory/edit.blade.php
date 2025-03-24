@@ -88,7 +88,7 @@
 
                             <!-- Submit button -->
                             <div class="form-group mb-3">
-                                <button type="submit" class="btn btn-dark float-end"><i class="bi bi-pencil-square me-2"></i>Update Item</button>
+                                <button type="submit" class="btn btn-dark float-end"><i class="bi bi-pencil-square me-2"></i>Update Asset</button>
                             </div>
 
                         </form>

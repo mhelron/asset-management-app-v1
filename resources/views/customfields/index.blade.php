@@ -51,17 +51,17 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-hover">
+                            <table class="table table-striped">
 
                                 <thead>
                                     <tr>
                                         <th scope="col">#</th>
                                         <th scope="col">Field Name</th>
                                         <th scope="col">Field Type</th>
-                                        <th scope="col">Input Type</th>
-                                        <th scope="col">Is Required?</th>
+                                        <th scope="col">Field Input Type</th>
+                                        <th scope="col">Value/s</th>
                                         <th scope="col">Description</th>
-                                        <th scope="col">Status</th>
+                                        <th scope="col">Is Required?</th>
                                         <th scope="col">Options</th>
                                     </tr>
                                 </thead>
@@ -72,31 +72,43 @@
                                             <td>{{ $field->name }}</td>
                                             <td>{{ ucfirst($field->type) }}</td>
                                             <td>
-                                                @if ($field->type === 'text')
+                                                @if ($field->type === 'Text')
                                                     {{ ucfirst($field->text_type) }}
+                                                    @elseif (in_array($field->type, ['Select', 'Checkbox', 'Radio', 'List']))
+                                                    User Input 
+                                                @else
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($field->type === 'Text')
+                                                    User Input
+                                                @elseif (in_array($field->type, ['List', 'Checkbox', 'Radio', 'Select']) && !empty($field->options))
+                                                    {{ implode(', ', json_decode($field->options, true)) }}
                                                 @else
                                                     N/A
                                                 @endif
                                             </td>
+                                            <td>{{ $field->desc }}</td>
                                             <td>
                                                 {{ $field->is_required ? 'Required' : 'Optional' }}
                                             </td>
                                             <td>
-                                                @if (in_array($field->type, ['list', 'checkbox', 'radio', 'select']) && is_array($field->options))
-                                                    {{ implode(', ', $field->options) }}
-                                                @else
-                                                    N/A xd
-                                                @endif
+                                                <div class="d-flex">
+                                                    <a href="{{ route('customfields.edit', $field->id) }}" class="btn btn-sm btn-success me-2"><i class="bi bi-pencil-square me-2"></i>Edit</a>
+                                                    
+                                                    <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#archiveModal" 
+                                                        data-id="{{ $field->id }}" data-name="{{ $field->name }}">
+                                                        <i class="bi bi-archive me-2"></i>Archive
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="6" class="text-center">No custom fields found.</td>
+                                            <td colspan="8" class="text-center">No custom fields found.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
-                                
-
                             </table>
                         </div>
                     </div>
@@ -105,5 +117,47 @@
         </div>
     </div>
 </div>
+
+<!-- Archive Confirmation Modal -->
+<div class="modal fade" id="archiveModal" tabindex="-1" aria-labelledby="archiveModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="archiveModalLabel">Confirm Archive</h5>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to archive <strong id="fieldName"></strong>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="archiveForm" method="POST" action="">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">Archive</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript to Handle Archive Modal -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const archiveButtons = document.querySelectorAll('[data-bs-target="#archiveModal"]');
+        const fieldNameElement = document.getElementById('fieldName');
+        const archiveForm = document.getElementById('archiveForm');
+
+        archiveButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const fieldName = this.getAttribute('data-name');
+                const fieldId = this.getAttribute('data-id');
+                fieldNameElement.textContent = fieldName;
+
+                // Fix URL construction
+                archiveForm.action = "{{ url('custom-fields/archive-custom-field/') }}/" + fieldId;
+            });
+        });
+    });
+</script>
 
 @endsection

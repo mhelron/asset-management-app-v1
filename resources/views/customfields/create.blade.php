@@ -84,11 +84,11 @@
                                         <label>Field Type<span class="text-danger"> *</span></label>
                                         <select name="type" id="field_type" class="form-control">
                                             <option value="" disabled {{ old('type') ? '' : 'selected' }}>Select a field type</option>
-                                            <option value="text" {{ old('type') == 'text' ? 'selected' : '' }}>Text</option>
-                                            <option value="list" {{ old('type') == 'list' ? 'selected' : '' }}>List</option>
-                                            <option value="checkbox" {{ old('type') == 'checkbox' ? 'selected' : '' }}>Checkbox</option>
-                                            <option value="radio" {{ old('type') == 'radio' ? 'selected' : '' }}>Radio Button</option>
-                                            <option value="select" {{ old('type') == 'select' ? 'selected' : '' }}>Select Dropdown</option>
+                                            <option value="Text" {{ old('type') == 'Text' ? 'selected' : '' }}>Text</option>
+                                            <option value="List" {{ old('type') == 'List' ? 'selected' : '' }}>List</option>
+                                            <option value="Checkbox" {{ old('type') == 'Checkbox' ? 'selected' : '' }}>Checkbox</option>
+                                            <option value="Radio" {{ old('type') == 'Radio' ? 'selected' : '' }}>Radio Button</option>
+                                            <option value="Select" {{ old('type') == 'Select' ? 'selected' : '' }}>Select Dropdown</option>
                                         </select>
                                         @error('type')
                                             <small class="text-danger">{{ $message }}</small>
@@ -102,12 +102,12 @@
                                         <label>Text Input Type<span class="text-danger"> *</span></label>
                                         <select name="text_type" class="form-control">
                                             <option value="" disabled {{ old('type') ? '' : 'selected' }}>Select a input type</option>
-                                            <option value="text" {{ old('text_type') == 'text' ? 'selected' : '' }}>Text</option>
-                                            <option value="email" {{ old('text_type') == 'email' ? 'selected' : '' }}>Email</option>
-                                            <option value="number" {{ old('text_type') == 'number' ? 'selected' : '' }}>Number</option>
-                                            <option value="image" {{ old('text_type') == 'image' ? 'selected' : '' }}>Image</option>
-                                            <option value="password" {{ old('text_type') == 'password' ? 'selected' : '' }}>Password</option>
-                                            <option value="date" {{ old('text_type') == 'date' ? 'selected' : '' }}>Date</option>
+                                            <option value="Text" {{ old('text_type') == 'Text' ? 'selected' : '' }}>Text</option>
+                                            <option value="Email" {{ old('text_type') == 'Email' ? 'selected' : '' }}>Email</option>
+                                            <option value="Number" {{ old('text_type') == 'Number' ? 'selected' : '' }}>Number</option>
+                                            <option value="Image" {{ old('text_type') == 'Image' ? 'selected' : '' }}>Image</option>
+                                            <option value="Password" {{ old('text_type') == 'Password' ? 'selected' : '' }}>Password</option>
+                                            <option value="Date" {{ old('text_type') == 'Date' ? 'selected' : '' }}>Date</option>
                                         </select>
                                         @error('text_type')
                                             <small class="text-danger">{{ $message }}</small>
@@ -151,7 +151,7 @@
 <script>
     document.getElementById('field_type').addEventListener('change', function() {
         const optionsContainer = document.getElementById('options-container');
-        if (['list', 'checkbox', 'radio', 'select'].includes(this.value)) {
+        if (['List', 'Checkbox', 'Radio', 'Select'].includes(this.value)) {
             optionsContainer.style.display = 'block';
         } else {
             optionsContainer.style.display = 'none';
@@ -184,10 +184,10 @@
         const textTypeContainer = document.getElementById('text-type-container');
         const optionsContainer = document.getElementById('options-container');
 
-        if (this.value === 'text') {
+        if (this.value === 'Text') {
             textTypeContainer.style.display = 'block'; // Show text type selection
             optionsContainer.style.display = 'none'; // Hide options (since text doesn't need options)
-        } else if (['list', 'checkbox', 'radio', 'select'].includes(this.value)) {
+        } else if (['List', 'Checkbox', 'Radio', 'Select'].includes(this.value)) {
             textTypeContainer.style.display = 'none'; // Hide text type selection
             optionsContainer.style.display = 'block'; // Show options container
         } else {
