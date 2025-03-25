@@ -57,6 +57,7 @@
                                     <tr>
                                         <th scope="col">#</th>
                                         <th scope="col">Field Name</th>
+                                        <th scope="col">Where to?</th>
                                         <th scope="col">Field Type</th>
                                         <th scope="col">Field Input Type</th>
                                         <th scope="col">Value/s</th>
@@ -70,6 +71,7 @@
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $field->name }}</td>
+                                            <td>{{ implode(', ', $field->applies_to) }}</td>
                                             <td>{{ ucfirst($field->type) }}</td>
                                             <td>
                                                 @if ($field->type === 'Text')
@@ -105,7 +107,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="8" class="text-center">No custom fields found.</td>
+                                            <td colspan="9" class="text-center">No custom fields found.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>

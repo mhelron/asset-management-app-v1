@@ -16,12 +16,14 @@ class CustomField extends Model
         'desc', 
         'text_type', 
         'is_required', 
-        'options', 
+        'options',
+        'applies_to', 
     ];
-
+    
     protected $casts = [
         'is_required' => 'boolean',
-        'options' => 'array', // Automatically convert JSON to array when accessed
+        'options' => 'array',
+        'applies_to' => 'array',
     ];
 
     public function categories()

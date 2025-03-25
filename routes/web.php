@@ -7,8 +7,11 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\CustomFieldsController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\ComponentController;
 
-Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
+Route::prefix('/')->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
+});
 
 // User Routes
 Route::prefix('/users')->group(function () {
@@ -63,4 +66,14 @@ Route::prefix('/departments')->group(function () {
     Route::get('edit-department/{id}', [DepartmentController::class, 'edit'])->name('departments.edit');
     Route::put('update-department/{id}', [DepartmentController::class, 'update'])->name('departments.update');
     Route::delete('/archive-department/{id}', [DepartmentController::class, 'archive'])->name('departments.archive');
+});
+
+// Component Routes
+Route::prefix('/components')->group(function () {
+    Route::get('/', [ComponentController::class, 'index'])->name('components.index');
+    Route::get('create-component', [ComponentController::class, 'create'])->name('components.create');
+    Route::post('create-component', [ComponentController::class, 'store'])->name('components.store');
+    Route::get('edit-component/{id}', [ComponentController::class, 'edit'])->name('components.edit');
+    Route::put('update-component/{id}', [ComponentController::class, 'update'])->name('components.update');
+    Route::delete('/archive-component/{id}', [ComponentController::class, 'archive'])->name('components.archive');
 });

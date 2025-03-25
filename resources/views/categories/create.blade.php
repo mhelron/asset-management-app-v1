@@ -26,12 +26,6 @@
         <div class="row d-flex justify-content-center">
             <div class="col-lg-12">
 
-                <div class="alert alert-info alert-dismissible fade show mt-2">
-                    <i class="bi bi-info-circle me-2"></i>
-                    You can add more custom fields <a href="{{ route('customfields.index') }}">here.</a>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-
                 <div class="d-flex justify-content-end mb-2">
                     <a href="{{ route('categories.index') }}" class="btn btn-danger"><i class="bi bi-arrow-return-left me-2"></i>Back</a>
                 </div>
@@ -74,7 +68,14 @@
                             
                             <!-- Custom Fields Section -->
                             <div class="col-md-12 mt-4" id="customFieldsSection" style="display: none;">
-                                <h4>Custom Fields</h4>
+
+                                <div class="alert alert-info alert-dismissible fade show mt-2">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    You can add more custom fields <a href="{{ route('customfields.index') }}">here.</a>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                
+                                <h4 class="mt-2">Custom Fields</h4>
                                 <p class="text-muted">Select the custom fields to be associated with this category.</p>
                                 <table class="table table-bordered">
                                     <thead>

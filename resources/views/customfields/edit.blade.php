@@ -147,6 +147,50 @@
                                 @enderror
                             </div>
 
+                            <!-- Where to apply the custom field -->
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <label>Apply to<span class="text-danger"> *</span></label>
+                                    <div class="d-flex flex-wrap mt-2">
+                                        <div class="form-check me-4 mb-2">
+                                            <input class="form-check-input" type="checkbox" name="applies_to[]" value="Category" id="category-check" 
+                                                {{ (is_array(old('applies_to')) && in_array('Category', old('applies_to'))) || 
+                                                (old('applies_to') === null && is_array($customField->applies_to) && in_array('Category', $customField->applies_to)) ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="category-check">
+                                                Category
+                                            </label>
+                                        </div>
+                                        <div class="form-check me-4 mb-2">
+                                            <input class="form-check-input" type="checkbox" name="applies_to[]" value="Asset" id="asset-check"
+                                                {{ (is_array(old('applies_to')) && in_array('Asset', old('applies_to'))) || 
+                                                (old('applies_to') === null && is_array($customField->applies_to) && in_array('Asset', $customField->applies_to)) ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="asset-check">
+                                                Asset
+                                            </label>
+                                        </div>
+                                        <div class="form-check me-4 mb-2">
+                                            <input class="form-check-input" type="checkbox" name="applies_to[]" value="Accessory" id="accessory-check"
+                                                {{ (is_array(old('applies_to')) && in_array('Accessory', old('applies_to'))) || 
+                                                (old('applies_to') === null && is_array($customField->applies_to) && in_array('Accessory', $customField->applies_to)) ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="accessory-check">
+                                                Accessory
+                                            </label>
+                                        </div>
+                                        <div class="form-check me-4 mb-2">
+                                            <input class="form-check-input" type="checkbox" name="applies_to[]" value="Component" id="component-check"
+                                                {{ (is_array(old('applies_to')) && in_array('Component', old('applies_to'))) || 
+                                                (old('applies_to') === null && is_array($customField->applies_to) && in_array('Component', $customField->applies_to)) ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="component-check">
+                                                Component
+                                            </label>
+                                        </div>
+                                    </div>
+                                    @error('applies_to')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+
                             <div class="form-group mb-3">
                                 <button type="submit" class="btn btn-dark float-end">
                                     <i class="bi bi-pencil-square me-2"></i>Update Custom Field

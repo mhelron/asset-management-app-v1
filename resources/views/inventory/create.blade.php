@@ -1,7 +1,5 @@
 @extends('layouts.app')
-
 @section('content')
-
 <!-- Content Header -->
 <div class="content-header">
     <div class="container">
@@ -19,17 +17,14 @@
         </div>
     </div>
 </div>
-
 <!-- Main content -->
 <div class="content">
     <div class="container">
         <div class="row d-flex justify-content-center">
             <div class="col-lg-12">
-
                 <div class="d-flex justify-content-end mb-2">
                     <a href="{{ route('inventory.index') }}" class="btn btn-danger"><i class="bi bi-arrow-return-left me-2"></i>Back</a>
                 </div>
-
                 <!-- Add Inventory Form -->
                 <div class="card">
                     <div class="card-body form-container">
@@ -59,17 +54,19 @@
                                                 </option>
                                             @endforeach
                                         </select>
-
                                         @error('category_id')
                                             <small class="text-danger">{{ $message }}</small>
                                         @enderror
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Custom Fields (Will be loaded dynamically) -->
+                            
+                            <!-- Asset-specific Custom Fields -->
+                            <div id="asset-fields-container" class="mb-3"></div>
+                            
+                            <!-- Category-specific Custom Fields -->
                             <div id="dynamic-fields-container" class="mb-3"></div>
-
+                            
                             <!-- Submit button -->
                             <div class="form-group mb-3">
                                 <button type="submit" class="btn btn-dark float-end"><i class="bi bi-plus-lg me-2"></i>Add Asset</button>
@@ -82,87 +79,209 @@
     </div>
 </div>
 
-<!-- JavaScript for handling dynamic fields -->
 <script>
-    document.getElementById('category_select').addEventListener('change', function() {
-        const categoryId = this.value;
-        const fieldsContainer = document.getElementById('dynamic-fields-container');
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Asset Custom Fields:', {!! json_encode($assetCustomFields) !!});
+        
+        // Log each field details
+        {!! json_encode($assetCustomFields) !!}.forEach(field => {
+            console.log('Field Name:', field.name);
+            console.log('Field Type:', field.type);
+            console.log('Field Options:', field.options);
+        });
 
-        // Clear previous fields
-        fieldsContainer.innerHTML = '';
-
-        if (categoryId) {
-            // Show loading indicator
-            fieldsContainer.innerHTML = '<div class="text-center"><p>Loading fields...</p></div>';
-
-            // Fetch custom fields for selected category
-            fetch(`/inventory/get-category-fields/${categoryId}`)
-                .then(response => response.json())
-                .then(fields => {
-                    fieldsContainer.innerHTML = '';
-
-                    if (fields.length > 0) {
-                        const rowDiv = document.createElement('div');
-                        rowDiv.className = 'row';
-                        fieldsContainer.appendChild(rowDiv);
-
-                        fields.forEach(field => {
-                            const colDiv = document.createElement('div');
-                            colDiv.className = 'col-md-6';
-                            rowDiv.appendChild(colDiv);
-
-                            const fieldGroup = document.createElement('div');
-                            fieldGroup.className = 'form-group mb-3';
-                            colDiv.appendChild(fieldGroup);
-
-                            const label = document.createElement('label');
-                            label.innerHTML = field.name + (field.is_required ? '<span class="text-danger"> *</span>' : '');
-                            fieldGroup.appendChild(label);
-
-                            let input;
-
-                            switch(field.type) {
-                                case 'text':
-                                    input = document.createElement('input');
-                                    input.type = 'text';
-                                    break;
-                                case 'number':
-                                    input = document.createElement('input');
-                                    input.type = 'number';
-                                    break;
-                                case 'date':
-                                    input = document.createElement('input');
-                                    input.type = 'date';
-                                    break;
-                                case 'textarea':
-                                    input = document.createElement('textarea');
-                                    input.rows = 3;
-                                    break;
-                                case 'image':
-                                    input = document.createElement('input');
-                                    input.type = 'file';
-                                    input.accept = 'image/*';
-                                    break;
-                                default:
-                                    input = document.createElement('input');
-                                    input.type = 'text';
+        // Function to render asset-specific custom fields
+        function renderAssetCustomFields() {
+            const container = document.getElementById('asset-fields-container');
+            container.innerHTML = '<h5 class="mb-3">Asset Information</h5>';
+            
+            // Get asset custom fields from PHP
+            const assetCustomFields = {!! json_encode($assetCustomFields) !!};
+            
+            if (assetCustomFields.length > 0) {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'row';
+                container.appendChild(rowDiv);
+                
+                assetCustomFields.forEach(field => {
+                    const colDiv = document.createElement('div');
+                    colDiv.className = 'col-md-6';
+                    rowDiv.appendChild(colDiv);
+                    
+                    const fieldGroup = document.createElement('div');
+                    fieldGroup.className = 'form-group mb-3';
+                    colDiv.appendChild(fieldGroup);
+                    
+                    const label = document.createElement('label');
+                    label.innerHTML = field.name + (field.is_required ? '<span class="text-danger"> *</span>' : '');
+                    fieldGroup.appendChild(label);
+                    
+                    let input;
+                    
+                    // Handle different field types
+                    switch(field.type) {
+                        case 'Text':
+                            input = document.createElement('input');
+                            input.type = field.text_type ? field.text_type.toLowerCase() : 'text';
+                            if (field.text_type === 'Image') {
+                                input.type = 'file';
+                                input.name = `custom_fields_files[${field.name}]`;
+                                input.accept = 'image/*';
+                            } else {
+                                input.name = `custom_fields[${field.name}]`;
                             }
-
-                            input.className = 'form-control';
+                            break;
+                        case 'Select':
+                            input = document.createElement('select');
                             input.name = `custom_fields[${field.name}]`;
-                            if (field.is_required) input.required = true;
-                            fieldGroup.appendChild(input);
-                        });
-                    } else {
-                        fieldsContainer.innerHTML = '<p class="text-info">No custom fields available for this category.</p>';
+                            
+                            // Add default option
+                            const defaultOption = document.createElement('option');
+                            defaultOption.value = '';
+                            defaultOption.textContent = 'Select an option';
+                            defaultOption.selected = true;
+                            defaultOption.disabled = true;
+                            input.appendChild(defaultOption);
+                            
+                            // Add options from field
+                            let selectOptions = field.options;
+                            if (typeof selectOptions === 'string') {
+                                try {
+                                    selectOptions = JSON.parse(selectOptions);
+                                } catch (e) {
+                                    console.error('Invalid JSON in options:', selectOptions);
+                                    selectOptions = [];
+                                }
+                            }
+                            
+                            if (selectOptions && Array.isArray(selectOptions)) {
+                                selectOptions.forEach(option => {
+                                    if (option) {
+                                        const optionElement = document.createElement('option');
+                                        optionElement.value = option;
+                                        optionElement.textContent = option;
+                                        input.appendChild(optionElement);
+                                    }
+                                });
+                            }
+                            break;
+                        case 'Checkbox':
+                            const checkboxContainer = document.createElement('div');
+                            input = checkboxContainer;
+                            
+                            let checkboxOptions = field.options;
+                            if (typeof checkboxOptions === 'string') {
+                                try {
+                                    checkboxOptions = JSON.parse(checkboxOptions);
+                                } catch (e) {
+                                    console.error('Invalid JSON in options:', checkboxOptions);
+                                    checkboxOptions = [];
+                                }
+                            }
+                            
+                            if (checkboxOptions && Array.isArray(checkboxOptions)) {
+                                checkboxOptions.forEach(option => {
+                                    if (option) {
+                                        const checkDiv = document.createElement('div');
+                                        checkDiv.className = 'form-check';
+                                        
+                                        const checkbox = document.createElement('input');
+                                        checkbox.type = 'checkbox';
+                                        checkbox.className = 'form-check-input';
+                                        checkbox.name = `custom_fields[${field.name}][]`;
+                                        checkbox.value = option;
+                                        
+                                        const checkLabel = document.createElement('label');
+                                        checkLabel.className = 'form-check-label ms-2';
+                                        checkLabel.textContent = option;
+                                        
+                                        checkDiv.appendChild(checkbox);
+                                        checkDiv.appendChild(checkLabel);
+                                        checkboxContainer.appendChild(checkDiv);
+                                    }
+                                });
+                            }
+                            break;
+                        case 'Radio':
+                            const radioContainer = document.createElement('div');
+                            input = radioContainer;
+                            
+                            let radioOptions = field.options;
+                            if (typeof radioOptions === 'string') {
+                                try {
+                                    radioOptions = JSON.parse(radioOptions);
+                                } catch (e) {
+                                    console.error('Invalid JSON in options:', radioOptions);
+                                    radioOptions = [];
+                                }
+                            }
+                            
+                            if (radioOptions && Array.isArray(radioOptions)) {
+                                radioOptions.forEach(option => {
+                                    if (option) {
+                                        const radioDiv = document.createElement('div');
+                                        radioDiv.className = 'form-check';
+                                        
+                                        const radio = document.createElement('input');
+                                        radio.type = 'radio';
+                                        radio.className = 'form-check-input';
+                                        radio.name = `custom_fields[${field.name}]`;
+                                        radio.value = option;
+                                        
+                                        const radioLabel = document.createElement('label');
+                                        radioLabel.className = 'form-check-label ms-2';
+                                        radioLabel.textContent = option;
+                                        
+                                        radioDiv.appendChild(radio);
+                                        radioDiv.appendChild(radioLabel);
+                                        radioContainer.appendChild(radioDiv);
+                                    }
+                                });
+                            }
+                            break;
+                        default:
+                            input = document.createElement('input');
+                            input.type = 'text';
+                            input.name = `custom_fields[${field.name}]`;
                     }
-                })
-                .catch(error => {
-                    console.error('Error fetching custom fields:', error);
-                    fieldsContainer.innerHTML = '<p class="text-danger">Error loading custom fields. Please try again.</p>';
+                    
+                    if (input.tagName !== 'DIV') {
+                        input.className = 'form-control';
+                        if (field.is_required) input.required = true;
+                    }
+                    
+                    fieldGroup.appendChild(input);
+                    
+                    // Add description if available
+                    if (field.desc) {
+                        const desc = document.createElement('small');
+                        desc.className = 'form-text text-muted';
+                        desc.textContent = field.desc;
+                        fieldGroup.appendChild(desc);
+                    }
                 });
+            } else {
+                container.innerHTML += '<p class="text-info">No asset-specific custom fields available.</p>';
+            }
         }
+
+        // Call the function
+        renderAssetCustomFields();
     });
 </script>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Asset Custom Fields:', {!! json_encode($assetCustomFields) !!});
+        
+        // Log each field details
+        {!! json_encode($assetCustomFields) !!}.forEach(field => {
+            console.log('Field Name:', field.name);
+            console.log('Field Type:', field.type);
+            console.log('Field Options:', field.options);
+        });
+
+        renderAssetCustomFields();
+    });
+</script>   
 @endsection

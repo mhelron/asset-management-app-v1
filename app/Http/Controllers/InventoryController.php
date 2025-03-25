@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Models\Category;
 use App\Models\Inventory;
+use App\Models\CustomField;
 
 class InventoryController extends Controller
 {
@@ -13,8 +14,11 @@ class InventoryController extends Controller
     {
         $inventory = Inventory::with('category')->get();
         $categories = Category::all();
+        
+        // Fetch custom fields that apply to Assets
+        $assetCustomFields = CustomField::whereJsonContains('applies_to', 'Asset')->get();
 
-        return view('inventory.index', compact('inventory', 'categories'));
+        return view('inventory.index', compact('inventory', 'categories', 'assetCustomFields'));
     }
 
     public function getCategoryFields($id)
@@ -34,6 +38,8 @@ class InventoryController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    
 
     public function getItemDetails($id)
     {
@@ -56,21 +62,28 @@ class InventoryController extends Controller
         try {
             $item = Inventory::findOrFail($id);
             
+            // Get the custom fields that apply to Asset
+            $assetCustomFields = CustomField::whereJsonContains('applies_to', 'Asset')->get();
+            
             // If custom_fields is stored as JSON in the database
-            $customFields = is_string($item->custom_fields) 
+            $itemCustomFields = is_string($item->custom_fields) 
                 ? json_decode($item->custom_fields, true) 
                 : $item->custom_fields;
-                
-            // Transform to the format expected by your modal
+            
+            // Format for display
             $formattedFields = [];
-            if (is_array($customFields)) {
-                foreach ($customFields as $name => $value) {
-                    $formattedFields[] = [
-                        'name' => $name,
-                        'type' => is_array($value) ? 'File' : gettype($value),
-                        'is_required' => false // Set based on your requirements
-                    ];
-                }
+            foreach ($assetCustomFields as $field) {
+                $fieldName = $field->name;
+                $fieldValue = $itemCustomFields[$fieldName] ?? '-';
+                
+                $formattedFields[] = [
+                    'name' => $fieldName,
+                    'type' => $field->type,
+                    'is_required' => $field->is_required,
+                    'value' => is_array($fieldValue) ? 
+                        (isset($fieldValue['original_name']) ? $fieldValue['original_name'] : json_encode($fieldValue)) : 
+                        $fieldValue
+                ];
             }
             
             return response()->json($formattedFields);
@@ -80,10 +93,13 @@ class InventoryController extends Controller
         }
     }
     
-
     public function create() {
         $categories = Category::all();
-        return view('inventory.create', compact('categories'));
+        
+        // Filter custom fields that apply to Asset
+        $assetCustomFields = CustomField::whereJsonContains('applies_to', 'Asset')->get();
+        
+        return view('inventory.create', compact('categories', 'assetCustomFields'));
     }
 
     public function store(Request $request)
@@ -117,12 +133,12 @@ class InventoryController extends Controller
         }
     }
 
-    public function edit($id)
-    {
+    public function edit($id) {
         $inventoryItem = Inventory::with('category')->findOrFail($id);
-        $categories = Category::pluck('category', 'id'); // Changed from 'name' to 'category'
+        $categories = Category::pluck('category', 'id');
+        $assetCustomFields = CustomField::whereJsonContains('applies_to', 'Asset')->get();
         
-        return view('inventory.edit', compact('inventoryItem', 'categories', 'id'));
+        return view('inventory.edit', compact('inventoryItem', 'categories', 'assetCustomFields', 'id'));
     }
 
     public function update(Request $request, $id)

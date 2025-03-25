@@ -32,7 +32,7 @@
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="" class="sidebar-link">
+                <a href="{{ route('components.index') }}" class="sidebar-link">
                     <i class="bi bi-boxes"></i>
                     <span class="ms-2">Components</span>
                 </a>

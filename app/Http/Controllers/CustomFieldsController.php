@@ -37,6 +37,8 @@ class CustomFieldsController extends Controller
             'desc' => 'required|string|max:1000',
             'options' => 'nullable|array',
             'options.*' => 'nullable|string|max:255',
+            'applies_to' => 'required|array|min:1', // Require at least one selection
+            'applies_to.*' => 'in:Category,Asset,Accessory,Component',
         ]);
 
         // Only store options if the field type requires it
@@ -51,6 +53,7 @@ class CustomFieldsController extends Controller
             'text_type' => $request->text_type,
             'is_required' => $request->is_required,
             'options' => $options,
+            'applies_to' => $request->applies_to, // Store where the field applies
         ]);
 
         return redirect()->route('customfields.index')->with('success', 'Custom Field added successfully!');
@@ -81,6 +84,8 @@ class CustomFieldsController extends Controller
             'desc' => 'required|string|max:1000',
             'options' => 'nullable|array',
             'options.*' => 'nullable|string|max:255',
+            'applies_to' => 'required|array|min:1', // Require at least one selection
+            'applies_to.*' => 'in:Category,Asset,Accessory,Component',
         ]);
 
         $options = in_array($request->type, ['List', 'Checkbox', 'Radio', 'Select']) ? json_encode($request->options) : null;
@@ -92,6 +97,7 @@ class CustomFieldsController extends Controller
             'text_type' => $request->text_type,
             'is_required' => $request->is_required,
             'options' => $options,
+            'applies_to' => $request->applies_to,
         ]);
 
         return redirect()->route('customfields.index')->with('success', 'Custom field updated successfully'); 

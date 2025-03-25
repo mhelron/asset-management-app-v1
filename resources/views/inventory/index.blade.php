@@ -55,6 +55,11 @@
                                         <th>Item</th>
                                         <th>Category</th>
                                         <th>Status</th>
+
+                                        @foreach($assetCustomFields as $field)
+                                            <th>{{ $field->name }}</th>
+                                        @endforeach
+
                                         <th>Options</th>
                                     </tr>
                                 </thead>
@@ -65,6 +70,28 @@
                                         <td>{{ $item->item_name }}</td>
                                         <td>{{ optional($item->category)->category ?? 'No Category' }}</td>
                                         <td>{{ $item->status }}</td>
+
+                                        <!-- Dynamic custom field values -->
+                                        @foreach($assetCustomFields as $field)
+                                        <td>
+                                            @php
+                                                $customFieldsData = is_string($item->custom_fields) ? json_decode($item->custom_fields, true) : $item->custom_fields;
+                                                $fieldValue = $customFieldsData[$field->name] ?? '-';
+                                                
+                                                // Handle different field types appropriately
+                                                if (is_array($fieldValue)) {
+                                                    if (isset($fieldValue['original_name'])) {
+                                                        echo '<a href="/storage/'.$fieldValue['path'].'" target="_blank">'.$fieldValue['original_name'].'</a>';
+                                                    } else {
+                                                        echo implode(', ', $fieldValue);
+                                                    }
+                                                } else {
+                                                    echo $fieldValue;
+                                                }
+                                            @endphp
+                                        </td>
+                                    @endforeach
+
                                         <td>
                                             <div class="d-flex">
                                                 <button type="button" class="btn btn-sm btn-primary me-2 view-details-btn" 
@@ -83,7 +110,7 @@
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="5" class="text-center">No item found</td>
+                                        <td colspan="{{ 5 + count($assetCustomFields) }}" class="text-center">No item found</td>
                                     </tr>
                                     @endforelse
                                 </tbody>

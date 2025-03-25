@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('text_type')->nullable(); // Store text input type (text, email, number, etc.)
             $table->boolean('is_required')->default(false);
             $table->json('options')->nullable(); // Store options for select, checkbox, radio
+            $table->json('applies_to')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
