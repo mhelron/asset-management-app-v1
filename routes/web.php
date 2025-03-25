@@ -8,6 +8,7 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\CustomFieldsController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\ComponentController;
+use App\Http\Controllers\AccessoryController;
 
 Route::prefix('/')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
@@ -77,4 +78,15 @@ Route::prefix('/components')->group(function () {
     Route::get('edit-component/{id}', [ComponentController::class, 'edit'])->name('components.edit');
     Route::put('update-component/{id}', [ComponentController::class, 'update'])->name('components.update');
     Route::delete('/archive-component/{id}', [ComponentController::class, 'archive'])->name('components.archive');
+});
+
+// Component Routes
+Route::prefix('/accessories')->group(function () {
+    Route::get('/', [AccessoryController::class, 'index'])->name('accessory.index');
+    Route::get('create-accessory', [AccessoryController::class, 'create'])->name('accessory.create');
+    Route::get('show-accessory/{id}', [AccessoryController::class, 'show'])->name('accessory.show');
+    Route::post('create-accessory', [AccessoryController::class, 'store'])->name('accessory.store');
+    Route::get('edit-accessory/{id}', [AccessoryController::class, 'edit'])->name('accessory.edit');
+    Route::put('update-accessory/{id}', [AccessoryController::class, 'update'])->name('accessory.update');
+    Route::delete('/archive-accessory/{id}', [AccessoryController::class, 'archive'])->name('accessory.archive');
 });

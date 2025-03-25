@@ -38,7 +38,7 @@
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="" class="sidebar-link">
+                <a href="{{ route('accessory.index') }}" class="sidebar-link">
                     <i class="bi bi-headphones"></i>
                     <span class="ms-2">Accessories</span>
                 </a>
