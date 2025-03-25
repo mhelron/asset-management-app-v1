@@ -72,6 +72,7 @@ Route::prefix('/departments')->group(function () {
 Route::prefix('/components')->group(function () {
     Route::get('/', [ComponentController::class, 'index'])->name('components.index');
     Route::get('create-component', [ComponentController::class, 'create'])->name('components.create');
+    Route::get('show-component/{id}', [ComponentController::class, 'show'])->name('components.show');
     Route::post('create-component', [ComponentController::class, 'store'])->name('components.store');
     Route::get('edit-component/{id}', [ComponentController::class, 'edit'])->name('components.edit');
     Route::put('update-component/{id}', [ComponentController::class, 'update'])->name('components.update');
