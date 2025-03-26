@@ -204,60 +204,100 @@
     </div>
 </div>
 
-<!-- JavaScript to Handle Field Type Selection -->
 <script>
-    document.getElementById('field_type').addEventListener('change', function() {
-        const textTypeContainer = document.getElementById('text-type-container');
-        const optionsContainer = document.getElementById('options-container');
-
-        if (this.value === 'Text') {
-            textTypeContainer.style.display = 'block'; // Show text type selection
-            optionsContainer.style.display = 'none'; // Hide options (since text doesn't need options)
-        } else if (['List', 'Checkbox', 'Radio', 'Select'].includes(this.value)) {
-            textTypeContainer.style.display = 'none'; // Hide text type selection
-            optionsContainer.style.display = 'block'; // Show options container
-        } else {
-            textTypeContainer.style.display = 'none'; // Hide both if another type is selected
-            optionsContainer.style.display = 'none';
-        }
-    });
-
-    document.getElementById('add-option').addEventListener('click', function() {
-        const optionsList = document.getElementById('options-list');
-        const newOption = document.createElement('div');
-        newOption.className = 'd-flex mb-2';
-        newOption.innerHTML = `
-            <input type="text" name="options[]" class="form-control me-2" placeholder="Enter option">
-            <button type="button" class="btn btn-danger d-flex align-items-center remove-option">
-                <i class="bi bi-x-lg me-2"></i> Remove
-            </button>
-        `;
-        optionsList.appendChild(newOption);
-    });
-
-    document.addEventListener('click', function(event) {
-        if (event.target.classList.contains('remove-option')) {
-            event.target.parentElement.remove();
-        }
-    });
-
-    // Initialize display on page load
     document.addEventListener('DOMContentLoaded', function() {
-        const fieldType = document.getElementById('field_type').value;
+        const fieldTypeSelect = document.getElementById('field_type');
         const textTypeContainer = document.getElementById('text-type-container');
         const optionsContainer = document.getElementById('options-container');
-
-        if (fieldType === 'Text') {
-            textTypeContainer.style.display = 'block';
-            optionsContainer.style.display = 'none';
-        } else if (['List', 'Checkbox', 'Radio', 'Select'].includes(fieldType)) {
-            textTypeContainer.style.display = 'none';
-            optionsContainer.style.display = 'block';
-        } else {
-            textTypeContainer.style.display = 'none';
-            optionsContainer.style.display = 'none';
+        const optionsList = document.getElementById('options-list');
+        const addOptionButton = document.getElementById('add-option');
+    
+        // Function to handle field type selection and preservation
+        function toggleContainers() {
+            const selectedType = fieldTypeSelect.value;
+            const oldTextType = "{{ old('text_type') }}";
+            const oldOptions = @json(old('options', []));
+    
+            // Handle text type container
+            if (selectedType === 'Text') {
+                textTypeContainer.style.display = 'block';
+                optionsContainer.style.display = 'none';
+                
+                // Only select old text type if it's not an empty string
+                if (oldTextType && oldTextType.trim() !== '') {
+                    const textTypeSelect = document.querySelector('select[name="text_type"]');
+                    textTypeSelect.value = oldTextType;
+                } else {
+                    // Reset to default if no valid old value
+                    const textTypeSelect = document.querySelector('select[name="text_type"]');
+                    textTypeSelect.selectedIndex = 0;
+                }
+            } 
+            // Handle options container for List, Checkbox, Radio, Select
+            else if (['List', 'Checkbox', 'Radio', 'Select'].includes(selectedType)) {
+                textTypeContainer.style.display = 'none';
+                optionsContainer.style.display = 'block';
+                
+                // Clear existing dynamic options
+                while (optionsList.children.length > 1) {
+                    optionsList.removeChild(optionsList.lastChild);
+                }
+    
+                // If no old options, just keep the initial input
+                if (!oldOptions || oldOptions.length === 0) {
+                    return;
+                }
+    
+                // Set the first input's value (can be empty)
+                const firstOptionInput = optionsList.querySelector('input[name="options[]"]');
+                firstOptionInput.value = oldOptions[0] || '';
+    
+                // Add additional options exactly matching the number of old options
+                for (let i = 1; i < oldOptions.length; i++) {
+                    const newOption = document.createElement('div');
+                    newOption.className = 'd-flex mb-2';
+                    newOption.innerHTML = `
+                        <input type="text" name="options[]" class="form-control me-2" placeholder="Enter option" value="${oldOptions[i] || ''}">
+                        <button type="button" class="btn btn-danger d-flex align-items-center remove-option">
+                            <i class="bi bi-x-lg me-2"></i> Remove
+                        </button>
+                    `;
+                    optionsList.appendChild(newOption);
+                }
+            } 
+            // Hide both containers for other field types
+            else {
+                textTypeContainer.style.display = 'none';
+                optionsContainer.style.display = 'none';
+            }
         }
+    
+        // Initial check on page load
+        toggleContainers();
+    
+        // Add change event listener
+        fieldTypeSelect.addEventListener('change', toggleContainers);
+    
+        // Option addition functionality
+        addOptionButton.addEventListener('click', function() {
+            const newOption = document.createElement('div');
+            newOption.className = 'd-flex mb-2';
+            newOption.innerHTML = `
+                <input type="text" name="options[]" class="form-control me-2" placeholder="Enter option">
+                <button type="button" class="btn btn-danger d-flex align-items-center remove-option">
+                    <i class="bi bi-x-lg me-2"></i> Remove
+                </button>
+            `;
+            optionsList.appendChild(newOption);
+        });
+    
+        // Option removal functionality
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('remove-option')) {
+                event.target.parentElement.remove();
+            }
+        });
     });
-</script>
+    </script>
 
 @endsection

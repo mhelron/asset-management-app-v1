@@ -280,8 +280,6 @@
             console.log('Field Type:', field.type);
             console.log('Field Options:', field.options);
         });
-
-        renderAssetCustomFields();
     });
 </script>   
 @endsection

@@ -52,8 +52,9 @@
                                 <!-- Required Select -->
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
-                                        <label>Is Required?<span class="text-danger"> *</span></label>
+                                        <label>Required or Optional?<span class="text-danger"> *</span></label>
                                         <select name="is_required" class="form-control">
+                                            <option value="" disabled {{ old('is_required') ? '' : 'selected' }}>Select an answer</option>
                                             <option value="0" {{ old('is_required') == '0' ? 'selected' : '' }}>No</option>
                                             <option value="1" {{ old('is_required') == '1' ? 'selected' : '' }}>Yes</option>
                                         </select>
@@ -61,6 +62,42 @@
                                             <small class="text-danger">{{ $message }}</small>
                                         @enderror
                                     </div>
+                                </div>
+                            </div>
+
+                            <!-- Where to apply the custom field -->
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <label>Apply to<span class="text-danger"> *</span></label>
+                                    <div class="d-flex flex-wrap mt-2">
+                                        <div class="form-check me-4 mb-2">
+                                            <input class="form-check-input" type="checkbox" name="applies_to[]" value="Category" id="category-check" {{ is_array(old('applies_to')) && in_array('Category', old('applies_to')) ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="category-check">
+                                                Category
+                                            </label>
+                                        </div>
+                                        <div class="form-check me-4 mb-2">
+                                            <input class="form-check-input" type="checkbox" name="applies_to[]" value="Asset" id="asset-check" {{ is_array(old('applies_to')) && in_array('Asset', old('applies_to')) ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="asset-check">
+                                                Asset
+                                            </label>
+                                        </div>
+                                        <div class="form-check me-4 mb-2">
+                                            <input class="form-check-input" type="checkbox" name="applies_to[]" value="Accessory" id="accessory-check" {{ is_array(old('applies_to')) && in_array('Accessory', old('applies_to')) ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="accessory-check">
+                                                Accessory
+                                            </label>
+                                        </div>
+                                        <div class="form-check me-4 mb-2">
+                                            <input class="form-check-input" type="checkbox" name="applies_to[]" value="Component" id="component-check" {{ is_array(old('applies_to')) && in_array('Component', old('applies_to')) ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="component-check">
+                                                Component
+                                            </label>
+                                        </div>
+                                    </div>
+                                    @error('applies_to')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
                                 </div>
                             </div>
 
@@ -101,7 +138,7 @@
                                     <div class="form-group mb-3">
                                         <label>Text Input Type<span class="text-danger"> *</span></label>
                                         <select name="text_type" class="form-control">
-                                            <option value="" disabled {{ old('type') ? '' : 'selected' }}>Select a input type</option>
+                                            <option value="" disabled {{ old('text_type') ? '' : 'selected' }}>Select a input type</option>
                                             <option value="Text" {{ old('text_type') == 'Text' ? 'selected' : '' }}>Text</option>
                                             <option value="Email" {{ old('text_type') == 'Email' ? 'selected' : '' }}>Email</option>
                                             <option value="Number" {{ old('text_type') == 'Number' ? 'selected' : '' }}>Number</option>
@@ -116,10 +153,29 @@
                                 </div>
                             </div>
 
-                            <!-- Options for List, Checkbox, Radio, Select -->
                             <div id="options-container" class="mb-3" style="display: none;">
                                 <label>Options<span class="text-danger"> *</span></label>
                                 <div id="options-list">
+                                    @php
+                                        $oldOptions = old('options', []);
+                                    @endphp
+                            
+                                    @if ($errors->has('options'))
+                                        <small class="text-danger">{{ $errors->first('options') }}</small>
+                                    @endif
+                            
+                                    @foreach ($oldOptions as $index => $option)
+                                        <div class="d-flex mb-2">
+                                            <input type="text" name="options[]" class="form-control me-2" value="{{ $option }}" placeholder="Enter option">
+                                            <button type="button" class="btn btn-danger remove-option d-flex align-items-center">
+                                                <i class="bi bi-x-lg me-2"></i> Remove
+                                            </button>
+                                        </div>
+                                        @if ($errors->has("options.$index"))
+                                            <small class="text-danger">{{ $errors->first("options.$index") }}</small>
+                                        @endif
+                                    @endforeach
+                            
                                     <div class="d-flex mb-2">
                                         <input type="text" name="options[]" class="form-control me-2" placeholder="Enter option">
                                         <button type="button" class="btn btn-success d-flex align-items-center" id="add-option">
@@ -127,47 +183,8 @@
                                         </button>
                                     </div>
                                 </div>
-                                @error('options')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
                             </div>
-
-                            <!-- Where to apply the custom field -->
-                            <div class="row mb-3">
-                                <div class="col-md-12">
-                                    <label>Apply to<span class="text-danger"> *</span></label>
-                                    <div class="d-flex flex-wrap mt-2">
-                                        <div class="form-check me-4 mb-2">
-                                            <input class="form-check-input" type="checkbox" name="applies_to[]" value="Category" id="category-check" {{ is_array(old('applies_to')) && in_array('Category', old('applies_to')) ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="category-check">
-                                                Category
-                                            </label>
-                                        </div>
-                                        <div class="form-check me-4 mb-2">
-                                            <input class="form-check-input" type="checkbox" name="applies_to[]" value="Asset" id="asset-check" {{ is_array(old('applies_to')) && in_array('Asset', old('applies_to')) ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="asset-check">
-                                                Asset
-                                            </label>
-                                        </div>
-                                        <div class="form-check me-4 mb-2">
-                                            <input class="form-check-input" type="checkbox" name="applies_to[]" value="Accessory" id="accessory-check" {{ is_array(old('applies_to')) && in_array('Accessory', old('applies_to')) ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="accessory-check">
-                                                Accessory
-                                            </label>
-                                        </div>
-                                        <div class="form-check me-4 mb-2">
-                                            <input class="form-check-input" type="checkbox" name="applies_to[]" value="Component" id="component-check" {{ is_array(old('applies_to')) && in_array('Component', old('applies_to')) ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="component-check">
-                                                Component
-                                            </label>
-                                        </div>
-                                    </div>
-                                    @error('applies_to')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
-                            </div>
-
+                            
                             <!-- Submit button -->
                             <div class="form-group mb-3">
                                 <button type="submit" class="btn btn-dark float-end">
@@ -183,54 +200,127 @@
     </div>
 </div>
 
-<!-- JavaScript to Handle Field Type Selection -->
 <script>
-    document.getElementById('field_type').addEventListener('change', function() {
-        const optionsContainer = document.getElementById('options-container');
-        if (['List', 'Checkbox', 'Radio', 'Select'].includes(this.value)) {
+document.addEventListener('DOMContentLoaded', function() {
+    const fieldTypeSelect = document.getElementById('field_type');
+    const textTypeContainer = document.getElementById('text-type-container');
+    const textTypeSelect = document.querySelector('select[name="text_type"]');
+    const optionsContainer = document.getElementById('options-container');
+    const optionsList = document.getElementById('options-list');
+
+    // Retrieve old values and errors
+    const oldOptions = @json(old('options', []));
+    const optionsErrors = @json($errors->get('options.*'));
+
+    function toggleContainers() {
+        const selectedType = fieldTypeSelect.value;
+
+        // Reset text type dropdown if not Text
+        if (selectedType !== 'Text') {
+            textTypeSelect.selectedIndex = 0;
+        }
+
+        // Show text type container only if "Text" is selected
+        textTypeContainer.style.display = selectedType === 'Text' ? 'block' : 'none';
+
+        // Show/hide options container based on field type
+        if (['List', 'Checkbox', 'Radio', 'Select'].includes(selectedType)) {
             optionsContainer.style.display = 'block';
+            renderOptions();
         } else {
             optionsContainer.style.display = 'none';
+            optionsList.innerHTML = ''; // Clear options completely
         }
-    });
+    }
 
-    document.getElementById('add-option').addEventListener('click', function() {
-        const optionsList = document.getElementById('options-list');
-        const newOption = document.createElement('div');
-        newOption.className = 'd-flex mb-2';
-        newOption.innerHTML = `
-            <input type="text" name="options[]" class="form-control me-2" placeholder="Enter option">
-            <button type="button" class="btn btn-danger d-flex align-items-center remove-option">
-                <i class="bi bi-x-lg me-2"></i> Remove
+    function renderOptions() {
+        // Clear existing options
+        optionsList.innerHTML = '';
+
+        // If current type is List, Checkbox, Radio, or Select, always add at least one option
+        if (['List', 'Checkbox', 'Radio', 'Select'].includes(fieldTypeSelect.value)) {
+            // If there are old options, render them with error handling
+            if (oldOptions.length > 0) {
+                oldOptions.forEach((option, index) => {
+                    addOption(option || '', optionsErrors[`options.${index}`] || '');
+                });
+            } else {
+                // If no old options exist, add one blank input field
+                addOption('', '');
+            }
+
+            // Add the "Add" button at the end
+            addAddButton();
+        }
+    }
+
+    function addOption(value = '', error = '') {
+        const optionWrapper = document.createElement('div');
+        optionWrapper.className = 'option-wrapper d-flex flex-column mb-2';
+        optionWrapper.innerHTML = `
+            <div class="d-flex align-items-center">
+                <input type="text" name="options[]" class="form-control me-2" placeholder="Enter option" value="${value}">
+                <button type="button" class="btn btn-danger remove-option d-flex align-items-center">
+                    <i class="bi bi-x-lg"></i> Remove
+                </button>
+            </div>
+            ${error ? `<small class="text-danger">${error}</small>` : ''}
+        `;
+
+        // Always insert before the add button (if it exists)
+        const addButton = optionsList.querySelector('#add-option-wrapper');
+        if (addButton) {
+            optionsList.insertBefore(optionWrapper, addButton);
+        } else {
+            optionsList.appendChild(optionWrapper);
+        }
+    }
+
+    function addAddButton() {
+        // Remove existing add button if any
+        const existingAddButton = document.getElementById('add-option-wrapper');
+        if (existingAddButton) existingAddButton.remove();
+
+        // Create new add button wrapper
+        const addButtonWrapper = document.createElement('div');
+        addButtonWrapper.id = 'add-option-wrapper';
+        addButtonWrapper.className = 'd-flex justify-content-end mt-2';
+        addButtonWrapper.innerHTML = `
+            <button type="button" class="btn btn-success d-flex align-items-center" id="add-option">
+                <i class="bi bi-plus-lg me-2"></i> Add
             </button>
         `;
-        optionsList.appendChild(newOption);
-    });
+        optionsList.appendChild(addButtonWrapper);
 
-    document.addEventListener('click', function(event) {
-        if (event.target.classList.contains('remove-option')) {
-            event.target.parentElement.remove();
+        // Attach event listener
+        document.getElementById('add-option').addEventListener('click', function() {
+            addOption('', '');
+        });
+    }
+
+    // Handle option removal
+    optionsList.addEventListener('click', function(event) {
+        if (event.target.closest('.remove-option')) {
+            const optionWrapper = event.target.closest('.option-wrapper');
+            optionWrapper.remove();
+
+            // Ensure at least one option input remains
+            if (optionsList.querySelectorAll('.option-wrapper').length === 0) {
+                addOption('', '');
+            }
         }
     });
-</script>
 
-<!-- JavaScript to Handle Field Type Selection -->
-<script>
-    document.getElementById('field_type').addEventListener('change', function() {
-        const textTypeContainer = document.getElementById('text-type-container');
-        const optionsContainer = document.getElementById('options-container');
+    // Ensure proper container visibility on load
+    toggleContainers();
 
-        if (this.value === 'Text') {
-            textTypeContainer.style.display = 'block'; // Show text type selection
-            optionsContainer.style.display = 'none'; // Hide options (since text doesn't need options)
-        } else if (['List', 'Checkbox', 'Radio', 'Select'].includes(this.value)) {
-            textTypeContainer.style.display = 'none'; // Hide text type selection
-            optionsContainer.style.display = 'block'; // Show options container
-        } else {
-            textTypeContainer.style.display = 'none'; // Hide both if another type is selected
-            optionsContainer.style.display = 'none';
-        }
+    // Add change event listener for field type selection
+    fieldTypeSelect.addEventListener('change', function() {
+        // Reset options when changing field type
+        oldOptions.length = 0; // Clear old options
+        toggleContainers();
     });
+});
 </script>
 
 @endsection

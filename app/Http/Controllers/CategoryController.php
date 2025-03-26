@@ -62,12 +62,12 @@ class CategoryController extends Controller
     public function edit($id)
     {
         $editdata = Category::find($id);
-        $customFields = CustomField::all();
+        $customFields = CustomField::whereJsonContains('applies_to', 'Category')->get();
         
         // If you need to get the actual CustomField models based on IDs stored in JSON
         $selectedCustomFieldIds = json_decode($editdata->custom_fields, true) ?? [];
         $selectedCustomFields = CustomField::whereIn('id', $selectedCustomFieldIds)->get();
-        
+
         if ($editdata) {
             return view('categories.edit', compact('editdata', 'customFields', 'selectedCustomFields'));
         }

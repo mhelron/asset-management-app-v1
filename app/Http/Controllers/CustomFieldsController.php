@@ -31,17 +31,22 @@ class CustomFieldsController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'is_required' => 'required|boolean',
+            'applies_to' => 'required|array',
+            'desc' => 'required|string',
             'type' => 'required|string|in:Text,List,Checkbox,Radio,Select',
-            'text_type' => 'nullable|string|in:Text,Email,Number,Image,Password,Date',
-            'is_required' => 'required|in:0,1',
-            'desc' => 'required|string|max:1000',
-            'options' => 'nullable|array',
-            'options.*' => 'nullable|string|max:255',
-            'applies_to' => 'required|array|min:1', // Require at least one selection
-            'applies_to.*' => 'in:Category,Asset,Accessory,Component',
+            'text_type' => 'required_if:type,Text|string|in:Text,Email,Number,Image,Password,Date',
+            'options' => 'required_if:type,List,Checkbox,Radio,Select|array|min:1',
+            'options.*' => 'required|max:255|distinct', // Ensure no duplicates
+        ],[
+            'text_type.required_if' => 'The text input type is required.',
+            'text_type.in' => 'Invalid text type selected. Choose from Text, Email, Number, Image, Password, or Date.',
+            'options.required_if' => 'You must add at least one option for List, Checkbox, Radio, or Select fields.',
+            'options.*.required' => 'The option field is required.',
+            'options.*.distinct' => 'Each option must be unique.',
+            'options.*.max' => 'Each option cannot exceed 255 characters.',
         ]);
 
-        // Only store options if the field type requires it
         $options = in_array($request->type, ['List', 'Checkbox', 'Radio', 'Select']) 
             ? json_encode(array_filter($request->options)) 
             : null;
@@ -52,13 +57,14 @@ class CustomFieldsController extends Controller
             'desc' => $request->desc,
             'text_type' => $request->text_type,
             'is_required' => $request->is_required,
-            'options' => $options,
-            'applies_to' => $request->applies_to, // Store where the field applies
+            'options' => in_array($request->type, ['List', 'Checkbox', 'Radio', 'Select']) 
+                ? json_encode(array_filter($request->options)) 
+                : null,
+            'applies_to' => $request->applies_to,
         ]);
 
         return redirect()->route('customfields.index')->with('success', 'Custom Field added successfully!');
     }
-
 
     /**
      * Show the form for editing the specified custom field.
