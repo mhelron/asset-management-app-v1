@@ -17,7 +17,7 @@ class CategoryController extends Controller
     public function create()
     {
         // Only fetch custom fields that apply to categories
-        $customFields = CustomField::whereJsonContains('applies_to', 'Category')->get();
+         $customFields = CustomField::whereJsonContains('applies_to', 'Category')->get();
         return view('categories.create', compact('customFields'));
     }
 

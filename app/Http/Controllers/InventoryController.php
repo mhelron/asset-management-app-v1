@@ -92,7 +92,7 @@ class InventoryController extends Controller
             return response()->json([], 404);
         }
     }
-    
+        
     public function create() {
         $categories = Category::all();
         

@@ -122,7 +122,6 @@
                                         <select name="type" id="field_type" class="form-control">
                                             <option value="" disabled {{ old('type') ? '' : 'selected' }}>Select a field type</option>
                                             <option value="Text" {{ old('type') == 'Text' ? 'selected' : '' }}>Text</option>
-                                            <option value="List" {{ old('type') == 'List' ? 'selected' : '' }}>List</option>
                                             <option value="Checkbox" {{ old('type') == 'Checkbox' ? 'selected' : '' }}>Checkbox</option>
                                             <option value="Radio" {{ old('type') == 'Radio' ? 'selected' : '' }}>Radio Button</option>
                                             <option value="Select" {{ old('type') == 'Select' ? 'selected' : '' }}>Select Dropdown</option>
@@ -133,25 +132,52 @@
                                     </div>
                                 </div>
 
-                                <!-- Text Input Type (Only visible when "Text" is selected) -->
-                                <div id="text-type-container" class="col-md-6" style="display: none;">
+                                <div id="text-type-container" class="col-md-6">
                                     <div class="form-group mb-3">
-                                        <label>Text Input Type<span class="text-danger"> *</span></label>
-                                        <select name="text_type" class="form-control">
-                                            <option value="" disabled {{ old('text_type') ? '' : 'selected' }}>Select a input type</option>
-                                            <option value="Text" {{ old('text_type') == 'Text' ? 'selected' : '' }}>Text</option>
+                                        <label>Text Format<span class="text-danger"> *</span></label>
+                                        <select name="text_type" class="form-control" id="text-type-select">
+                                            <option value="" disabled {{ old('text_type') ? '' : 'selected' }}>Select a format</option>
+                                            <option value="Any" {{ old('text_type') == 'Any' ? 'selected' : '' }}>Any (No Restrictions)</option>
                                             <option value="Email" {{ old('text_type') == 'Email' ? 'selected' : '' }}>Email</option>
-                                            <option value="Number" {{ old('text_type') == 'Number' ? 'selected' : '' }}>Number</option>
-                                            <option value="Image" {{ old('text_type') == 'Image' ? 'selected' : '' }}>Image</option>
-                                            <option value="Password" {{ old('text_type') == 'Password' ? 'selected' : '' }}>Password</option>
+                                            <option value="Image" {{ old('text_type') == 'Image' ? 'selected' : '' }}>Image File Path</option>
                                             <option value="Date" {{ old('text_type') == 'Date' ? 'selected' : '' }}>Date</option>
+                                            <option value="Alpha-Dash" {{ old('text_type') == 'Alpha-Dash' ? 'selected' : '' }}>Alpha-Dash</option>
+                                            <option value="Numeric" {{ old('text_type') == 'Numeric' ? 'selected' : '' }}>Numeric</option>
+                                            <option value="Custom" {{ old('text_type') == 'Custom' ? 'selected' : '' }}>Custom Format</option>
                                         </select>
+                                        
+                                        <div id="text-type-hint" class="text-muted mt-2">
+                                            <!-- Hints will be dynamically populated here -->
+                                        </div>
+                                        
                                         @error('text_type')
                                             <small class="text-danger">{{ $message }}</small>
                                         @enderror
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Custom Regex Container -->
+                            <div id="custom-regex-container" class="col-md-6" style="display: none;">
+                                <div class="form-group mb-3">
+                                    <label>Custom Regex Pattern<span class="text-danger"> *</span></label>
+                                    <input type="text" name="custom_regex" class="form-control" 
+                                        placeholder="Enter your custom regex pattern" 
+                                        value="{{ old('custom_regex') }}"
+                                        id="custom-regex-input">
+                                    <small class="text-muted">
+                                        Example patterns:
+                                        <ul class="mb-0">
+                                            <li><code>^\d{3}-\d{2}-\d{4}$</code> (SSN format: 123-45-6789)</li>
+                                            <li><code>^\d{15}$</code> (IMEI Code: 123456789012345)</li>
+                                        </ul>
+                                    </small>
+                                    @error('custom_regex')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+
 
                             <div id="options-container" class="mb-3" style="display: none;">
                                 <label>Options<span class="text-danger"> *</span></label>
@@ -224,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function() {
         textTypeContainer.style.display = selectedType === 'Text' ? 'block' : 'none';
 
         // Show/hide options container based on field type
-        if (['List', 'Checkbox', 'Radio', 'Select'].includes(selectedType)) {
+        if (['Checkbox', 'Radio', 'Select'].includes(selectedType)) {
             optionsContainer.style.display = 'block';
             renderOptions();
         } else {
@@ -238,7 +264,7 @@ document.addEventListener('DOMContentLoaded', function() {
         optionsList.innerHTML = '';
 
         // If current type is List, Checkbox, Radio, or Select, always add at least one option
-        if (['List', 'Checkbox', 'Radio', 'Select'].includes(fieldTypeSelect.value)) {
+        if (['Checkbox', 'Radio', 'Select'].includes(fieldTypeSelect.value)) {
             // If there are old options, render them with error handling
             if (oldOptions.length > 0) {
                 oldOptions.forEach((option, index) => {
@@ -321,6 +347,57 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleContainers();
     });
 });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const textTypeSelect = document.getElementById('text-type-select');
+        const textTypeHint = document.getElementById('text-type-hint');
+        const customRegexContainer = document.getElementById('custom-regex-container');
+        const customRegexInput = document.getElementById('custom-regex-input');
+    
+        // Hint dictionary
+        const hints = {
+            'Any': 'No input restrictions. Example: "Hello World 123"',
+            'Email': 'Must be a valid email address. Example: "user@example.com"',
+            'Image': 'File path for images. Example: "/uploads/profile.jpg"',
+            'Date': 'Date in YYYY-MM-DD format. Example: "2024-03-27"',
+            'Alpha-Dash': 'Allows letters, numbers, underscores, and hyphens. Example: "user-profile_123"',
+            'Numeric': 'Only numbers (integer or decimal). Example: "12345" or "3.14"',
+            'Custom': 'Define your own validation pattern using regex. Provide a custom validation rule.'
+        };
+    
+        function toggleCustomRegexContainer() {
+            const selectedType = textTypeSelect.value;
+            
+            // Update hint text
+            textTypeHint.textContent = hints[selectedType] || '';
+            
+            // Show/hide custom regex container
+            customRegexContainer.style.display = 
+                selectedType === 'Custom' ? 'block' : 'none';
+        }
+    
+        // Update hint and show/hide custom regex
+        textTypeSelect.addEventListener('change', toggleCustomRegexContainer);
+    
+        // Check for validation errors or old values
+        const hasCustomRegexError = @json($errors->has('custom_regex'));
+        const oldTextType = @json(old('text_type'));
+        const oldCustomRegex = @json(old('custom_regex'));
+    
+        // If there's a custom regex error or old custom regex value, show the container
+        if (hasCustomRegexError || (oldTextType === 'Custom' && oldCustomRegex)) {
+            textTypeSelect.value = 'Custom';
+            customRegexContainer.style.display = 'block';
+            textTypeHint.textContent = hints['Custom'];
+        }
+    
+        // Trigger initial hint setup
+        if (textTypeSelect.value) {
+            textTypeHint.textContent = hints[textTypeSelect.value] || '';
+        }
+    });
 </script>
 
 @endsection

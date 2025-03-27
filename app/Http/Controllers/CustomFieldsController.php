@@ -34,30 +34,28 @@ class CustomFieldsController extends Controller
             'is_required' => 'required|boolean',
             'applies_to' => 'required|array',
             'desc' => 'required|string',
-            'type' => 'required|string|in:Text,List,Checkbox,Radio,Select',
-            'text_type' => 'required_if:type,Text|string|in:Text,Email,Number,Image,Password,Date',
-            'options' => 'required_if:type,List,Checkbox,Radio,Select|array|min:1',
-            'options.*' => 'required|max:255|distinct', // Ensure no duplicates
+            'type' => 'required|string|in:Text,Checkbox,Radio,Select',
+            'text_type' => 'required_if:type,Text|string|in:Any,Email,Image,Date,Alpha-Dash,Numeric,Custom',
+            'custom_regex' => 'required_if:text_type,Custom|nullable|string',
+            'options' => 'required_if:type,Checkbox,Radio,Select|array|min:1',
+            'options.*' => 'required|max:255|distinct',
         ],[
-            'text_type.required_if' => 'The text input type is required.',
-            'text_type.in' => 'Invalid text type selected. Choose from Text, Email, Number, Image, Password, or Date.',
-            'options.required_if' => 'You must add at least one option for List, Checkbox, Radio, or Select fields.',
+            'text_type.required_if' => 'The format type is required.',
+            'text_type.in' => 'Invalid format type selected.',
             'options.*.required' => 'The option field is required.',
             'options.*.distinct' => 'Each option must be unique.',
             'options.*.max' => 'Each option cannot exceed 255 characters.',
+            'custom_regex.required_if' => 'Custom regex pattern is required.',
         ]);
-
-        $options = in_array($request->type, ['List', 'Checkbox', 'Radio', 'Select']) 
-            ? json_encode(array_filter($request->options)) 
-            : null;
 
         CustomField::create([
             'name' => $request->name,
             'type' => $request->type,
             'desc' => $request->desc,
             'text_type' => $request->text_type,
+            'custom_regex' => $request->text_type == 'Custom' ? $request->custom_regex : null,
             'is_required' => $request->is_required,
-            'options' => in_array($request->type, ['List', 'Checkbox', 'Radio', 'Select']) 
+            'options' => in_array($request->type, ['Checkbox', 'Radio', 'Select']) 
                 ? json_encode(array_filter($request->options)) 
                 : null,
             'applies_to' => $request->applies_to,
@@ -72,8 +70,17 @@ class CustomFieldsController extends Controller
     public function edit($id)
     {
         $customField = CustomField::findOrFail($id);
+        
+        // Ensure we only decode if it's a JSON string
+        if (is_string($customField->options) && !empty($customField->options)) {
+            $customField->options = json_decode($customField->options, true);
+        } else {
+            $customField->options = [];
+        }
+    
         return view('customfields.edit', compact('customField'));
-    }
+    }    
+
 
     /**
      * Update the specified custom field in storage.
@@ -84,25 +91,33 @@ class CustomFieldsController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'type' => 'required|string|in:Text,List,Checkbox,Radio,Select',
-            'text_type' => 'nullable|string|in:Text,Email,Number,Image,Password,Date',
-            'is_required' => 'required|in:0,1',
-            'desc' => 'required|string|max:1000',
-            'options' => 'nullable|array',
-            'options.*' => 'nullable|string|max:255',
-            'applies_to' => 'required|array|min:1', // Require at least one selection
-            'applies_to.*' => 'in:Category,Asset,Accessory,Component',
-        ]);
-
-        $options = in_array($request->type, ['List', 'Checkbox', 'Radio', 'Select']) ? json_encode($request->options) : null;
+            'is_required' => 'required|boolean',
+            'applies_to' => 'required|array',
+            'desc' => 'required|string',
+            'type' => 'required|string|in:Text,Checkbox,Radio,Select',
+            'text_type' => 'required_if:type,Text|string|in:Any,Email,Image,Date,Alpha-Dash,Numeric,Custom',
+            'custom_regex' => 'required_if:text_type,Custom|nullable|string',
+            'options' => 'required_if:type,Checkbox,Radio,Select|array|min:1',
+            'options.*' => 'required|max:255|distinct',
+        ],[
+            'text_type.required_if' => 'The format type is required.',
+            'text_type.in' => 'Invalid format type selected.',
+            'options.*.required' => 'The option field is required.',
+            'options.*.distinct' => 'Each option must be unique.',
+            'options.*.max' => 'Each option cannot exceed 255 characters.',
+            'custom_regex.required_if' => 'Custom regex pattern is required.',
+        ]);;
 
         $customField->update([
             'name' => $request->name,
             'type' => $request->type,
             'desc' => $request->desc,
             'text_type' => $request->text_type,
+            'custom_regex' => $request->text_type == 'Custom' ? $request->custom_regex : null,
             'is_required' => $request->is_required,
-            'options' => $options,
+            'options' => in_array($request->type, ['Checkbox', 'Radio', 'Select']) 
+                ? json_encode(array_filter($request->options)) 
+                : null,
             'applies_to' => $request->applies_to,
         ]);
 

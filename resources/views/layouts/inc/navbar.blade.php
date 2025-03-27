@@ -20,31 +20,37 @@
     
         <ul class="sidebar-nav">
             <li class="sidebar-item">
+                <a href="#" class="sidebar-link">
+                    <i class="bi bi-person-circle"></i>
+                    <span class="ms-2">My Profile</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
                 <a href="{{ route('dashboard.index') }}" class="sidebar-link {{ request()->routeIs('dashboard.index') ? 'active' : '' }}">
                     <i class="bi bi-house"></i>
                     <span class="ms-2">Dashboard</span>
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="{{ route('inventory.index') }}" class="sidebar-link {{ request()->routeIs('inventory.index', 'inventory.create') ? 'active' : '' }}">
+                <a href="{{ route('inventory.index') }}" class="sidebar-link {{ request()->routeIs('inventory.index', 'inventory.create', 'inventory.edit') ? 'active' : '' }}">
                     <i class="bi bi-box-seam"></i>
                     <span class="ms-2">Assets</span>
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="{{ route('components.index') }}" class="sidebar-link">
+                <a href="{{ route('components.index') }}" class="sidebar-link {{ request()->routeIs('components.index', 'components.create', 'components.edit') ? 'active' : '' }}">
                     <i class="bi bi-boxes"></i>
                     <span class="ms-2">Components</span>
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="{{ route('accessory.index') }}" class="sidebar-link">
+                <a href="{{ route('accessory.index') }}" class="sidebar-link {{ request()->routeIs('accessory.index', 'accessory.create', 'accessory.edit') ? 'active' : '' }}">
                     <i class="bi bi-headphones"></i>
                     <span class="ms-2">Accessories</span>
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="{{ route('users.index') }}" class="sidebar-link {{ request()->routeIs('users.index', 'users.create', 'users.edit') ? 'active' : '' }}"">
+                <a href="{{ route('users.index') }}" class="sidebar-link {{ request()->routeIs('users.index', 'users.create', 'users.edit', 'users.view ') ? 'active' : '' }}"">
                     <i class="bi bi-people"></i>
                     <span class="ms-2">Users</span>
                 </a>
@@ -58,19 +64,19 @@
                 <div class="collapse sidebar-collapse {{ request()->routeIs('customfields.index') || request()->routeIs('categories.index') || request()->routeIs('departments.index') ? 'show' : '' }}" id="settingsCollapse">
                     <ul class="sidebar-submenu">
                         <li class="sidebar-item">
-                            <a href="{{ route('customfields.index') }}" class="sidebar-link {{ request()->routeIs('customfields.index') ? 'active' : '' }}">
+                            <a href="{{ route('customfields.index') }}" class="sidebar-link {{ request()->routeIs('customfields.index', 'customfields.create', 'customfields.edit') ? 'active' : '' }}">
                                 <i class="bi bi-wrench"></i>
                                 <span class="ms-2">Custom Fields</span>
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="{{ route('categories.index') }}" class="sidebar-link {{ request()->routeIs('categories.index') ? 'active' : '' }}">
+                            <a href="{{ route('categories.index') }}" class="sidebar-link {{ request()->routeIs('categories.index', 'categories.create', 'categories.edit') ? 'active' : '' }}">
                                 <i class="bi bi-folder"></i>
                                 <span class="ms-2">Categories</span>
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="{{ route('departments.index') }}" class="sidebar-link {{ request()->routeIs('departments.index') ? 'active' : '' }}">
+                            <a href="{{ route('departments.index') }}" class="sidebar-link {{ request()->routeIs('departments.index', 'department.create', 'department.edit') ? 'active' : '' }}">
                                 <i class="bi bi-building"></i>
                                 <span class="ms-2">Departments</span>
                             </a>

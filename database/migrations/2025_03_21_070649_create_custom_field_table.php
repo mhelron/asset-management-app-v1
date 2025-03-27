@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('type')->default('text');
             $table->text('desc');
             $table->string('text_type')->nullable(); // Store text input type (text, email, number, etc.)
+            $table->string('custom_regex')->nullable(); // Add this line
             $table->boolean('is_required')->default(false);
             $table->json('options')->nullable(); // Store options for select, checkbox, radio
             $table->json('applies_to')->nullable();

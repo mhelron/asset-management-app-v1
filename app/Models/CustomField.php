@@ -15,10 +15,11 @@ class CustomField extends Model
         'type',
         'desc', 
         'text_type', 
+        'custom_regex', // Add this line
         'is_required', 
         'options',
         'applies_to', 
-    ];
+    ];  
     
     protected $casts = [
         'is_required' => 'boolean',

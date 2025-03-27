@@ -60,94 +60,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group mb-3">
-                                        <label>Description <span class="text-danger"> *</span></label>
-                                        <textarea name="desc" class="form-control" placeholder="Enter description">{{ old('desc', $customField->desc) }}</textarea>
-                                        @error('desc')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group mb-3">
-                                        <label>Field Type<span class="text-danger"> *</span></label>
-                                        <select name="type" id="field_type" class="form-control">
-                                            <option value="" disabled {{ old('type', $customField->type) ? '' : 'selected' }}>Select a field type</option>
-                                            <option value="Text" {{ old('type', $customField->type) == 'Text' ? 'selected' : '' }}>Text</option>
-                                            <option value="List" {{ old('type', $customField->type) == 'List' ? 'selected' : '' }}>List</option>
-                                            <option value="Checkbox" {{ old('type', $customField->type) == 'Checkbox' ? 'selected' : '' }}>Checkbox</option>
-                                            <option value="Radio" {{ old('type', $customField->type) == 'Radio' ? 'selected' : '' }}>Radio Button</option>
-                                            <option value="Select" {{ old('type', $customField->type) == 'Select' ? 'selected' : '' }}>Select Dropdown</option>
-                                        </select>
-                                        @error('type')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div id="text-type-container" class="col-md-6" style="display: none;">
-                                    <div class="form-group mb-3">
-                                        <label>Text Input Type<span class="text-danger"> *</span></label>
-                                        <select name="text_type" class="form-control">
-                                            <option value="" disabled {{ old('text_type', $customField->text_type) ? '' : 'selected' }}>Select a input type</option>
-                                            <option value="Text" {{ old('text_type', $customField->text_type) == 'Text' ? 'selected' : '' }}>Text</option>
-                                            <option value="Email" {{ old('text_type', $customField->text_type) == 'Email' ? 'selected' : '' }}>Email</option>
-                                            <option value="Number" {{ old('text_type', $customField->text_type) == 'Number' ? 'selected' : '' }}>Number</option>
-                                            <option value="Image" {{ old('text_type', $customField->text_type) == 'Image' ? 'selected' : '' }}>Image</option>
-                                            <option value="Password" {{ old('text_type', $customField->text_type) == 'Password' ? 'selected' : '' }}>Password</option>
-                                            <option value="Date" {{ old('text_type', $customField->text_type) == 'Date' ? 'selected' : '' }}>Date</option>
-                                        </select>
-                                        @error('text_type')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
 
-                            <!-- Options for List, Checkbox, Radio, Select -->
-                            <div id="options-container" class="mb-3" style="display: none;">
-                                <label>Options<span class="text-danger"> *</span></label>
-                                <div id="options-list">
-                                    @if(in_array($customField->type, ['List', 'Checkbox', 'Radio', 'Select']) && $customField->options)
-                                        @php
-                                        $options = json_decode($customField->options);
-                                        @endphp
-                                        
-                                        @foreach($options as $index => $option)
-                                            @if($index === 0)
-                                            <div class="d-flex mb-2">
-                                                <input type="text" name="options[]" value="{{ $option }}" class="form-control me-2" placeholder="Enter option">
-                                                <button type="button" class="btn btn-success d-flex align-items-center" id="add-option">
-                                                    <i class="bi bi-plus-lg me-2"></i> Add
-                                                </button>
-                                            </div>
-                                            @else
-                                            <div class="d-flex mb-2">
-                                                <input type="text" name="options[]" value="{{ $option }}" class="form-control me-2" placeholder="Enter option">
-                                                <button type="button" class="btn btn-danger d-flex align-items-center remove-option">
-                                                    <i class="bi bi-x-lg me-2"></i> Remove
-                                                </button>
-                                            </div>
-                                            @endif
-                                        @endforeach
-                                    @else
-                                        <div class="d-flex mb-2">
-                                            <input type="text" name="options[]" class="form-control me-2" placeholder="Enter option">
-                                            <button type="button" class="btn btn-success d-flex align-items-center" id="add-option">
-                                                <i class="bi bi-plus-lg me-2"></i> Add
-                                            </button>
-                                        </div>
-                                    @endif
-                                </div>
-                                @error('options')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-
-                            <!-- Where to apply the custom field -->
+                                                        <!-- Where to apply the custom field -->
                             <div class="row mb-3">
                                 <div class="col-md-12">
                                     <label>Apply to<span class="text-danger"> *</span></label>
@@ -191,6 +105,148 @@
                                 </div>
                             </div>
 
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group mb-3">
+                                        <label>Description <span class="text-danger"> *</span></label>
+                                        <textarea name="desc" class="form-control" placeholder="Enter description">{{ old('desc', $customField->desc) }}</textarea>
+                                        @error('desc')
+                                            <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label>Field Type<span class="text-danger"> *</span></label>
+                                        <select name="type" id="field_type" class="form-control">
+                                            <option value="" disabled {{ old('type', $customField->type) ? '' : 'selected' }}>Select a field type</option>
+                                            <option value="Text" {{ old('type', $customField->type) == 'Text' ? 'selected' : '' }}>Text</option>
+                                            <option value="Checkbox" {{ old('type', $customField->type) == 'Checkbox' ? 'selected' : '' }}>Checkbox</option>
+                                            <option value="Radio" {{ old('type', $customField->type) == 'Radio' ? 'selected' : '' }}>Radio Button</option>
+                                            <option value="Select" {{ old('type', $customField->type) == 'Select' ? 'selected' : '' }}>Select Dropdown</option>
+                                        </select>
+                                        @error('type')
+                                            <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div id="text-type-container" class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label>Text Format<span class="text-danger"> *</span></label>
+                                        <select name="text_type" class="form-control" id="text-type-select">
+                                            <option value="" disabled {{ old('text_type') ? '' : 'selected' }}>Select a format</option>
+                                            <option value="Any" {{ old('text_type', $customField->text_type) == 'Any' ? 'selected' : '' }}>Any (No Restrictions)</option>
+                                            <option value="Email" {{ old('text_type', $customField->text_type) == 'Email' ? 'selected' : '' }}>Email</option>
+                                            <option value="Image" {{ old('text_type', $customField->text_type) == 'Image' ? 'selected' : '' }}>Image File Path</option>
+                                            <option value="Date" {{ old('text_type', $customField->text_type) == 'Date' ? 'selected' : '' }}>Date</option>
+                                            <option value="Alpha-Dash" {{ old('text_type', $customField->text_type) == 'Alpha-Dash' ? 'selected' : '' }}>Alpha-Dash</option>
+                                            <option value="Numeric" {{ old('text_type', $customField->text_type) == 'Numeric' ? 'selected' : '' }}>Numeric</option>
+                                            <option value="Custom"{{ old('text_type', $customField->text_type) == 'Custom' ? 'selected' : '' }}>Custom Format</option>
+                                        </select>
+                                        
+                                        <div id="text-type-hint" class="text-muted mt-2">
+                                            <!-- Hints will be dynamically populated here -->
+                                        </div>
+                                        
+                                        @error('text_type')
+                                            <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+
+                                </div>
+
+                                <div class="col-md-6">
+                                    <!-- Custom Regex Container -->
+                                    <div id="custom-regex-container" style="display: none;">
+                                        <div class="form-group mb-3">
+                                            <label>Custom Regex Pattern<span class="text-danger"> *</span></label>
+                                            <input type="text" name="custom_regex" class="form-control" 
+                                                placeholder="Enter your custom regex pattern" 
+                                                value="{{ old('custom_regex', isset($customField) ? $customField->custom_regex : '') }}"
+                                                id="custom-regex-input">
+                                             <small class="text-muted">
+                                                Example patterns:
+                                                <ul class="mb-0">
+                                                    <li><code>^\d{3}-\d{2}-\d{4}$</code> (SSN format: 123-45-6789)</li>
+                                                    <li><code>^\d{15}$</code> (IMEI Code: 123456789012345)</li>
+                                                </ul>
+                                            </small>
+                                            @error('custom_regex')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Custom Regex Container -->
+                            <div id="custom-regex-container" class="col-md-6" style="display: none;">
+                                <div class="form-group mb-3">
+                                    <label>Custom Regex Pattern<span class="text-danger"> *</span></label>
+                                    <input type="text" name="custom_regex" class="form-control" 
+                                        placeholder="Enter your custom regex pattern" 
+                                        value="{{ old('custom_regex', isset($customField) ? $customField->custom_regex : '') }}"
+                                        id="custom-regex-input">
+                                    <small class="text-muted">
+                                        Example patterns:
+                                        <ul class="mb-0">
+                                            <li><code>^\d{3}-\d{2}-\d{4}$</code> (SSN format: 123-45-6789)</li>
+                                            <li><code>^\d{15}$</code> (IMEI Code: 123456789012345)</li>
+                                        </ul>
+                                    </small>
+                                    @error('custom_regex')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Options for List, Checkbox, Radio, Select -->
+                            <div id="options-container" class="mb-3" style="display: none;">
+                                <label>Options<span class="text-danger"> *</span></label>
+                                <div id="options-list">
+                                    @php
+                                        $existingOptions = old('options', isset($customField) 
+                                            ? (is_string($customField->options) ? json_decode($customField->options, true) : $customField->options) 
+                                            : []
+                                        );
+                                    @endphp
+
+                                    
+                                    @if ($errors->has('options'))
+                                        <small class="text-danger">{{ $errors->first('options') }}</small>
+                                    @endif
+                                    
+                                    @foreach ($existingOptions as $index => $option)
+                                        <div class="d-flex mb-2">
+                                            <input type="text" name="options[]" class="form-control me-2" value="{{ $option }}" placeholder="Enter option">
+                                            <button type="button" class="btn btn-danger remove-option d-flex align-items-center">
+                                                <i class="bi bi-x-lg me-2"></i> Remove
+                                            </button>
+                                        </div>
+                                        @if ($errors->has("options.$index"))
+                                            <small class="text-danger">{{ $errors->first("options.$index") }}</small>
+                                        @endif
+                                    @endforeach
+                                    
+                                    {{-- Always provide at least one empty input for new option --}}
+                                    <div class="d-flex mb-2">
+                                        <input type="text" name="options[]" class="form-control me-2" placeholder="Enter option">
+                                        <button type="button" class="btn btn-success d-flex align-items-center" id="add-option">
+                                            <i class="bi bi-plus-lg me-2"></i> Add
+                                        </button>
+                                    </div>                             
+                                </div>
+                            </div>
+
+
+
                             <div class="form-group mb-3">
                                 <button type="submit" class="btn btn-dark float-end">
                                     <i class="bi bi-pencil-square me-2"></i>Update Custom Field
@@ -208,96 +264,167 @@
     document.addEventListener('DOMContentLoaded', function() {
         const fieldTypeSelect = document.getElementById('field_type');
         const textTypeContainer = document.getElementById('text-type-container');
+        const textTypeSelect = document.getElementById('text-type-select');
+        const textTypeHint = document.getElementById('text-type-hint');
+        const customRegexContainer = document.getElementById('custom-regex-container');
+        const customRegexInput = document.getElementById('custom-regex-input');
         const optionsContainer = document.getElementById('options-container');
         const optionsList = document.getElementById('options-list');
-        const addOptionButton = document.getElementById('add-option');
-    
-        // Function to handle field type selection and preservation
+
+        // Retrieve old values and errors
+        const oldOptions = @json(old('options', isset($customField) && $customField->options ? $customField->options : []));
+        const optionsErrors = @json($errors->get('options.*'));
+
+        const hasCustomRegexError = @json($errors->has('custom_regex'));
+        const oldTextType = @json(old('text_type', isset($customField) ? $customField->text_type : ''));
+        const oldCustomRegex = @json(old('custom_regex', isset($customField) ? $customField->custom_regex : ''));
+
+        // Hint dictionary
+        const hints = {
+            'Any': 'No input restrictions. Example: "Hello World 123"',
+            'Email': 'Must be a valid email address. Example: "user@example.com"',
+            'Image': 'File path for images. Example: "/uploads/profile.jpg"',
+            'Date': 'Date in YYYY-MM-DD format. Example: "2024-03-27"',
+            'Alpha-Dash': 'Allows letters, numbers, underscores, and hyphens. Example: "user-profile_123"',
+            'Numeric': 'Only numbers (integer or decimal). Example: "12345" or "3.14"',
+            'Custom': 'Define your own validation pattern using regex. Provide a custom validation rule.'
+        };
+
         function toggleContainers() {
             const selectedType = fieldTypeSelect.value;
-            const oldTextType = "{{ old('text_type') }}";
-            const oldOptions = @json(old('options', []));
-    
-            // Handle text type container
-            if (selectedType === 'Text') {
-                textTypeContainer.style.display = 'block';
-                optionsContainer.style.display = 'none';
-                
-                // Only select old text type if it's not an empty string
-                if (oldTextType && oldTextType.trim() !== '') {
-                    const textTypeSelect = document.querySelector('select[name="text_type"]');
-                    textTypeSelect.value = oldTextType;
-                } else {
-                    // Reset to default if no valid old value
-                    const textTypeSelect = document.querySelector('select[name="text_type"]');
-                    textTypeSelect.selectedIndex = 0;
-                }
-            } 
-            // Handle options container for List, Checkbox, Radio, Select
-            else if (['List', 'Checkbox', 'Radio', 'Select'].includes(selectedType)) {
-                textTypeContainer.style.display = 'none';
+
+            // Show/hide text type container
+            textTypeContainer.style.display = selectedType === 'Text' ? 'block' : 'none';
+
+            // Reset text type dropdown and custom regex if not Text
+            if (selectedType !== 'Text') {
+                textTypeSelect.selectedIndex = 0;
+                resetCustomRegex();
+            }
+
+            // Show/hide options container
+            if (['Checkbox', 'Radio', 'Select'].includes(selectedType)) {
                 optionsContainer.style.display = 'block';
-                
-                // Clear existing dynamic options
-                while (optionsList.children.length > 1) {
-                    optionsList.removeChild(optionsList.lastChild);
-                }
-    
-                // If no old options, just keep the initial input
-                if (!oldOptions || oldOptions.length === 0) {
-                    return;
-                }
-    
-                // Set the first input's value (can be empty)
-                const firstOptionInput = optionsList.querySelector('input[name="options[]"]');
-                firstOptionInput.value = oldOptions[0] || '';
-    
-                // Add additional options exactly matching the number of old options
-                for (let i = 1; i < oldOptions.length; i++) {
-                    const newOption = document.createElement('div');
-                    newOption.className = 'd-flex mb-2';
-                    newOption.innerHTML = `
-                        <input type="text" name="options[]" class="form-control me-2" placeholder="Enter option" value="${oldOptions[i] || ''}">
-                        <button type="button" class="btn btn-danger d-flex align-items-center remove-option">
-                            <i class="bi bi-x-lg me-2"></i> Remove
-                        </button>
-                    `;
-                    optionsList.appendChild(newOption);
-                }
-            } 
-            // Hide both containers for other field types
-            else {
-                textTypeContainer.style.display = 'none';
+                renderOptions();
+            } else {
                 optionsContainer.style.display = 'none';
+                optionsList.innerHTML = ''; // Clear options
             }
         }
-    
-        // Initial check on page load
-        toggleContainers();
-    
-        // Add change event listener
-        fieldTypeSelect.addEventListener('change', toggleContainers);
-    
-        // Option addition functionality
-        addOptionButton.addEventListener('click', function() {
-            const newOption = document.createElement('div');
-            newOption.className = 'd-flex mb-2';
-            newOption.innerHTML = `
-                <input type="text" name="options[]" class="form-control me-2" placeholder="Enter option">
-                <button type="button" class="btn btn-danger d-flex align-items-center remove-option">
-                    <i class="bi bi-x-lg me-2"></i> Remove
+
+        function toggleCustomRegexContainer() {
+            const selectedType = textTypeSelect.value;
+
+            // Update hint text
+            textTypeHint.textContent = hints[selectedType] || '';
+
+            // Show/hide custom regex container
+            if (selectedType === 'Custom') {
+                customRegexContainer.style.display = 'block';
+            } else {
+                resetCustomRegex();
+            }
+        }
+
+        function resetCustomRegex() {
+            customRegexContainer.style.display = 'none';
+            customRegexInput.value = ''; // Clear custom regex input
+        }
+
+        function renderOptions() {
+            // Clear existing options
+            optionsList.innerHTML = '';
+
+            if (['Checkbox', 'Radio', 'Select'].includes(fieldTypeSelect.value)) {
+                if (oldOptions.length > 0) {
+                    oldOptions.forEach((option, index) => {
+                        addOption(option || '', optionsErrors[`options.${index}`] || '');
+                    });
+                } else {
+                    addOption('', '');
+                }
+                addAddButton();
+            }
+        }
+
+        function addOption(value = '', error = '') {
+            const optionWrapper = document.createElement('div');
+            optionWrapper.className = 'option-wrapper d-flex flex-column mb-2';
+            optionWrapper.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <input type="text" name="options[]" class="form-control me-2" placeholder="Enter option" value="${value}">
+                    <button type="button" class="btn btn-danger remove-option d-flex align-items-center">
+                        <i class="bi bi-x-lg"></i> Remove
+                    </button>
+                </div>
+                ${error ? `<small class="text-danger">${error}</small>` : ''}
+            `;
+
+            // Insert before add button or append
+            const addButton = optionsList.querySelector('#add-option-wrapper');
+            if (addButton) {
+                optionsList.insertBefore(optionWrapper, addButton);
+            } else {
+                optionsList.appendChild(optionWrapper);
+            }
+        }
+
+        function addAddButton() {
+            const existingAddButton = document.getElementById('add-option-wrapper');
+            if (existingAddButton) existingAddButton.remove();
+
+            const addButtonWrapper = document.createElement('div');
+            addButtonWrapper.id = 'add-option-wrapper';
+            addButtonWrapper.className = 'd-flex justify-content-end mt-2';
+            addButtonWrapper.innerHTML = `
+                <button type="button" class="btn btn-success d-flex align-items-center" id="add-option">
+                    <i class="bi bi-plus-lg me-2"></i> Add
                 </button>
             `;
-            optionsList.appendChild(newOption);
-        });
-    
-        // Option removal functionality
-        document.addEventListener('click', function(event) {
-            if (event.target.classList.contains('remove-option')) {
-                event.target.parentElement.remove();
+            optionsList.appendChild(addButtonWrapper);
+
+            document.getElementById('add-option').addEventListener('click', function() {
+                addOption('', '');
+            });
+        }
+
+        // Ensure at least one option input remains
+        optionsList.addEventListener('click', function(event) {
+            if (event.target.closest('.remove-option')) {
+                event.target.closest('.option-wrapper').remove();
+                if (optionsList.querySelectorAll('.option-wrapper').length === 0) {
+                    addOption('', '');
+                }
             }
         });
+
+        function restoreCustomRegexState() {
+            if (oldTextType === 'Custom' || hasCustomRegexError || oldCustomRegex) {
+                textTypeSelect.value = 'Custom';
+                customRegexContainer.style.display = 'block';
+                textTypeHint.textContent = hints['Custom'];
+                customRegexInput.value = oldCustomRegex || '';
+            }
+
+            if (textTypeSelect.value) {
+                textTypeHint.textContent = hints[textTypeSelect.value] || '';
+            }
+        }
+
+        // Event Listeners
+        textTypeSelect.addEventListener('change', toggleCustomRegexContainer);
+        fieldTypeSelect.addEventListener('change', function() {
+            oldOptions.length = 0; // Clear old options
+            resetCustomRegex();
+            toggleContainers();
+        });
+
+        // Initialize on page load
+        toggleContainers();
+        restoreCustomRegexState();
     });
-    </script>
+</script>
+
+
 
 @endsection

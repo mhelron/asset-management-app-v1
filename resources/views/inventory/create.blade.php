@@ -93,7 +93,6 @@
         // Function to render asset-specific custom fields
         function renderAssetCustomFields() {
             const container = document.getElementById('asset-fields-container');
-            container.innerHTML = '<h5 class="mb-3">Asset Information</h5>';
             
             // Get asset custom fields from PHP
             const assetCustomFields = {!! json_encode($assetCustomFields) !!};
@@ -251,17 +250,9 @@
                     }
                     
                     fieldGroup.appendChild(input);
-                    
-                    // Add description if available
-                    if (field.desc) {
-                        const desc = document.createElement('small');
-                        desc.className = 'form-text text-muted';
-                        desc.textContent = field.desc;
-                        fieldGroup.appendChild(desc);
-                    }
                 });
             } else {
-                container.innerHTML += '<p class="text-info">No asset-specific custom fields available.</p>';
+                
             }
         }
 
@@ -269,17 +260,5 @@
         renderAssetCustomFields();
     });
 </script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Asset Custom Fields:', {!! json_encode($assetCustomFields) !!});
-        
-        // Log each field details
-        {!! json_encode($assetCustomFields) !!}.forEach(field => {
-            console.log('Field Name:', field.name);
-            console.log('Field Type:', field.type);
-            console.log('Field Options:', field.options);
-        });
-    });
-</script>   
+ 
 @endsection

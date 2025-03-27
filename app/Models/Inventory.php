@@ -20,6 +20,11 @@ class Inventory extends Model {
         'custom_fields' => 'array',
     ];
 
+    public function getCustomFieldsAttribute($value)
+    {
+        return json_decode($value, true);
+    }
+
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id');
