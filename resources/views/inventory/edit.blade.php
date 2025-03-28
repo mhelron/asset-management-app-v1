@@ -246,7 +246,7 @@
                             fieldGroup.appendChild(errorSpan);
                         });
                     } else {
-                        fieldsContainer.innerHTML = '<p class="text-info">This category does not have any custom fields defined.</p>';
+
                     }
                 })
                 .catch(error => {

@@ -36,7 +36,7 @@
                                     <div class="form-group mb-3">
                                         <label>Item Name<span class="text-danger"> *</span></label>
                                         <input type="text" name="item_name" value="{{ old('item_name') }}" class="form-control" placeholder="Enter item name">
-                                        @error('item_name')
+                                        @error('item_name', 'inventoryForm')
                                             <small class="text-danger">{{ $message }}</small>
                                         @enderror
                                     </div>
@@ -54,13 +54,13 @@
                                                 </option>
                                             @endforeach
                                         </select>
-                                        @error('category_id')
+                                        @error('category_id', 'inventoryForm')
                                             <small class="text-danger">{{ $message }}</small>
                                         @enderror
                                     </div>
                                 </div>
                             </div>
-                            
+                                                    
                             <!-- Asset-specific Custom Fields -->
                             <div id="asset-fields-container" class="mb-3"></div>
                             
@@ -81,184 +81,239 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('Asset Custom Fields:', {!! json_encode($assetCustomFields) !!});
-        
-        // Log each field details
-        {!! json_encode($assetCustomFields) !!}.forEach(field => {
-            console.log('Field Name:', field.name);
-            console.log('Field Type:', field.type);
-            console.log('Field Options:', field.options);
-        });
-
-        // Function to render asset-specific custom fields
+        const assetCustomFields = {!! json_encode($assetCustomFields) !!};
+        const validationErrors = {!! $errors->customFields ? $errors->customFields->toJson() : '{}' !!};
+    
         function renderAssetCustomFields() {
             const container = document.getElementById('asset-fields-container');
             
-            // Get asset custom fields from PHP
-            const assetCustomFields = {!! json_encode($assetCustomFields) !!};
+            if (assetCustomFields.length === 0) {
+                return;
+            }
+    
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'row';
+            container.appendChild(rowDiv);
             
-            if (assetCustomFields.length > 0) {
-                const rowDiv = document.createElement('div');
-                rowDiv.className = 'row';
-                container.appendChild(rowDiv);
+            assetCustomFields.forEach(field => {
+                const colDiv = document.createElement('div');
+                colDiv.className = 'col-md-6';
+                rowDiv.appendChild(colDiv);
                 
-                assetCustomFields.forEach(field => {
-                    const colDiv = document.createElement('div');
-                    colDiv.className = 'col-md-6';
-                    rowDiv.appendChild(colDiv);
-                    
-                    const fieldGroup = document.createElement('div');
-                    fieldGroup.className = 'form-group mb-3';
-                    colDiv.appendChild(fieldGroup);
-                    
-                    const label = document.createElement('label');
-                    label.innerHTML = field.name + (field.is_required ? '<span class="text-danger"> *</span>' : '');
-                    fieldGroup.appendChild(label);
-                    
-                    let input;
-                    
-                    // Handle different field types
-                    switch(field.type) {
-                        case 'Text':
-                            input = document.createElement('input');
-                            input.type = field.text_type ? field.text_type.toLowerCase() : 'text';
-                            if (field.text_type === 'Image') {
-                                input.type = 'file';
-                                input.name = `custom_fields_files[${field.name}]`;
-                                input.accept = 'image/*';
-                            } else {
-                                input.name = `custom_fields[${field.name}]`;
-                            }
-                            break;
-                        case 'Select':
-                            input = document.createElement('select');
-                            input.name = `custom_fields[${field.name}]`;
-                            
-                            // Add default option
-                            const defaultOption = document.createElement('option');
-                            defaultOption.value = '';
-                            defaultOption.textContent = 'Select an option';
-                            defaultOption.selected = true;
-                            defaultOption.disabled = true;
-                            input.appendChild(defaultOption);
-                            
-                            // Add options from field
-                            let selectOptions = field.options;
-                            if (typeof selectOptions === 'string') {
-                                try {
-                                    selectOptions = JSON.parse(selectOptions);
-                                } catch (e) {
-                                    console.error('Invalid JSON in options:', selectOptions);
-                                    selectOptions = [];
-                                }
-                            }
-                            
-                            if (selectOptions && Array.isArray(selectOptions)) {
-                                selectOptions.forEach(option => {
-                                    if (option) {
-                                        const optionElement = document.createElement('option');
-                                        optionElement.value = option;
-                                        optionElement.textContent = option;
-                                        input.appendChild(optionElement);
-                                    }
-                                });
-                            }
-                            break;
-                        case 'Checkbox':
-                            const checkboxContainer = document.createElement('div');
-                            input = checkboxContainer;
-                            
-                            let checkboxOptions = field.options;
-                            if (typeof checkboxOptions === 'string') {
-                                try {
-                                    checkboxOptions = JSON.parse(checkboxOptions);
-                                } catch (e) {
-                                    console.error('Invalid JSON in options:', checkboxOptions);
-                                    checkboxOptions = [];
-                                }
-                            }
-                            
-                            if (checkboxOptions && Array.isArray(checkboxOptions)) {
-                                checkboxOptions.forEach(option => {
-                                    if (option) {
-                                        const checkDiv = document.createElement('div');
-                                        checkDiv.className = 'form-check';
-                                        
-                                        const checkbox = document.createElement('input');
-                                        checkbox.type = 'checkbox';
-                                        checkbox.className = 'form-check-input';
-                                        checkbox.name = `custom_fields[${field.name}][]`;
-                                        checkbox.value = option;
-                                        
-                                        const checkLabel = document.createElement('label');
-                                        checkLabel.className = 'form-check-label ms-2';
-                                        checkLabel.textContent = option;
-                                        
-                                        checkDiv.appendChild(checkbox);
-                                        checkDiv.appendChild(checkLabel);
-                                        checkboxContainer.appendChild(checkDiv);
-                                    }
-                                });
-                            }
-                            break;
-                        case 'Radio':
-                            const radioContainer = document.createElement('div');
-                            input = radioContainer;
-                            
-                            let radioOptions = field.options;
-                            if (typeof radioOptions === 'string') {
-                                try {
-                                    radioOptions = JSON.parse(radioOptions);
-                                } catch (e) {
-                                    console.error('Invalid JSON in options:', radioOptions);
-                                    radioOptions = [];
-                                }
-                            }
-                            
-                            if (radioOptions && Array.isArray(radioOptions)) {
-                                radioOptions.forEach(option => {
-                                    if (option) {
-                                        const radioDiv = document.createElement('div');
-                                        radioDiv.className = 'form-check';
-                                        
-                                        const radio = document.createElement('input');
-                                        radio.type = 'radio';
-                                        radio.className = 'form-check-input';
-                                        radio.name = `custom_fields[${field.name}]`;
-                                        radio.value = option;
-                                        
-                                        const radioLabel = document.createElement('label');
-                                        radioLabel.className = 'form-check-label ms-2';
-                                        radioLabel.textContent = option;
-                                        
-                                        radioDiv.appendChild(radio);
-                                        radioDiv.appendChild(radioLabel);
-                                        radioContainer.appendChild(radioDiv);
-                                    }
-                                });
-                            }
-                            break;
-                        default:
-                            input = document.createElement('input');
-                            input.type = 'text';
-                            input.name = `custom_fields[${field.name}]`;
-                    }
-                    
-                    if (input.tagName !== 'DIV') {
-                        input.className = 'form-control';
-                        if (field.is_required) input.required = true;
-                    }
-                    
-                    fieldGroup.appendChild(input);
-                });
-            } else {
+                const fieldGroup = document.createElement('div');
+                fieldGroup.className = 'form-group mb-3';
+                colDiv.appendChild(fieldGroup);
                 
+                const label = document.createElement('label');
+                label.innerHTML = field.name + (field.is_required ? '<span class="text-danger"> *</span>' : '');
+                fieldGroup.appendChild(label);
+                
+                let input;
+                const errorKey = `custom_fields.${field.name}`;
+                const fileErrorKey = `custom_fields_files.${field.name}`;
+    
+                // Improved old value determination
+                const oldValue = (validationErrors.old && 
+                    (validationErrors.old[errorKey] || validationErrors.old[fileErrorKey])) || null;
+    
+                switch(field.type) {
+                    case 'Text':
+                        input = document.createElement('input');
+                        input.type = field.text_type ? field.text_type.toLowerCase() : 'text';
+                        
+                        if (field.text_type === 'Image') {
+                            input.type = 'file';
+                            input.name = `custom_fields_files[${field.name}]`;
+                            input.accept = 'image/*';
+                        } else {
+                            input.name = `custom_fields[${field.name}]`;
+                        }
+                        break;
+                    
+                    case 'Select':
+                        input = document.createElement('select');
+                        input.name = `custom_fields[${field.name}]`;
+                        
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = '';
+                        defaultOption.textContent = 'Select an option';
+                        defaultOption.selected = true;
+                        defaultOption.disabled = true;
+                        input.appendChild(defaultOption);
+                        
+                        let selectOptions = typeof field.options === 'string' 
+                            ? JSON.parse(field.options) 
+                            : field.options;
+                        
+                        if (selectOptions && Array.isArray(selectOptions)) {
+                            selectOptions.forEach(option => {
+                                if (option) {
+                                    const optionElement = document.createElement('option');
+                                    optionElement.value = option;
+                                    optionElement.textContent = option;
+                                    // Set selected if matches old value
+                                    if (oldValue === option) {
+                                        optionElement.selected = true;
+                                    }
+                                    input.appendChild(optionElement);
+                                }
+                            });
+                        }
+                        break;
+                    
+                    case 'Checkbox':
+                        input = document.createElement('div');
+                        input.className = 'checkbox-container';
+                        
+                        let checkboxOptions = typeof field.options === 'string' 
+                            ? JSON.parse(field.options) 
+                            : field.options;
+                        
+                        if (checkboxOptions && Array.isArray(checkboxOptions)) {
+                            checkboxOptions.forEach(option => {
+                                if (option) {
+                                    const checkDiv = document.createElement('div');
+                                    checkDiv.className = 'form-check';
+                                    
+                                    const checkbox = document.createElement('input');
+                                    checkbox.type = 'checkbox';
+                                    checkbox.className = 'form-check-input';
+                                    checkbox.name = `custom_fields[${field.name}][]`;
+                                    checkbox.value = option;
+                                    
+                                    // Check if this option was previously selected
+                                    if (Array.isArray(oldValue) && oldValue.includes(option)) {
+                                        checkbox.checked = true;
+                                    }
+                                    
+                                    const checkLabel = document.createElement('label');
+                                    checkLabel.className = 'form-check-label';
+                                    checkLabel.textContent = option;
+                                    
+                                    checkDiv.appendChild(checkbox);
+                                    checkDiv.appendChild(checkLabel);
+                                    input.appendChild(checkDiv);
+                                }
+                            });
+                        }
+                        break;
+                    
+                    case 'Radio':
+                        input = document.createElement('div');
+                        input.className = 'radio-container';
+                        
+                        let radioOptions = typeof field.options === 'string' 
+                            ? JSON.parse(field.options) 
+                            : field.options;
+                        
+                        if (radioOptions && Array.isArray(radioOptions)) {
+                            radioOptions.forEach(option => {
+                                if (option) {
+                                    const radioDiv = document.createElement('div');
+                                    radioDiv.className = 'form-check';
+                                    
+                                    const radio = document.createElement('input');
+                                    radio.type = 'radio';
+                                    radio.className = 'form-check-input';
+                                    radio.name = `custom_fields[${field.name}]`;
+                                    radio.value = option;
+                                    
+                                    // Set checked if matches old value
+                                    if (oldValue === option) {
+                                        radio.checked = true;
+                                    }
+                                    
+                                    const radioLabel = document.createElement('label');
+                                    radioLabel.className = 'form-check-label';
+                                    radioLabel.textContent = option;
+                                    
+                                    radioDiv.appendChild(radio);
+                                    radioDiv.appendChild(radioLabel);
+                                    input.appendChild(radioDiv);
+                                }
+                            });
+                        }
+                        break;
+                    
+                    default:
+                        input = document.createElement('input');
+                        input.type = 'text';
+                        input.name = `custom_fields[${field.name}]`;
+                }
+                
+                // Apply form control class and handle validation
+                if (input && input.tagName && input.tagName !== 'DIV') {
+                    input.className = 'form-control';
+                    
+                    // Set old value if exists
+                    if (oldValue && input.type !== 'file') {
+                        input.value = oldValue;
+                    }
+                }
+                
+                // Append input to field group
+                fieldGroup.appendChild(input);
+                
+                // Improved error handling
+                let errorMessages = [];
+                if (validationErrors[errorKey]) {
+                    errorMessages = errorMessages.concat(validationErrors[errorKey]);
+                }
+                if (validationErrors[fileErrorKey]) {
+                    errorMessages = errorMessages.concat(validationErrors[fileErrorKey]);
+                }
+                
+                if (errorMessages.length > 0) {
+                    const errorSpan = document.createElement('small');
+                    errorSpan.className = 'text-danger';
+                    errorSpan.textContent = errorMessages[0];
+                    fieldGroup.appendChild(errorSpan);
+                }
+            });
+        }
+    
+        // Call the function to render fields
+        renderAssetCustomFields();
+    
+        // Optional: Add form-wide error handling
+        function displayGlobalErrors() {
+            const globalErrorContainer = document.createElement('div');
+            globalErrorContainer.className = 'alert alert-danger';
+            globalErrorContainer.style.display = 'none';
+
+            // Collect all error messages
+            const globalErrors = [];
+            
+            // Check validationErrors object thoroughly
+            if (validationErrors) {
+                for (const [key, errors] of Object.entries(validationErrors)) {
+                    // Handle both array and string error formats
+                    if (Array.isArray(errors)) {
+                        globalErrors.push(...errors);
+                    } else if (typeof errors === 'string') {
+                        globalErrors.push(errors);
+                    } else if (typeof errors === 'object') {
+                        // Handle nested error objects
+                        Object.values(errors).forEach(errorList => {
+                            if (Array.isArray(errorList)) {
+                                globalErrors.push(...errorList);
+                            }
+                        });
+                    }
+                }
+            }
+            
+            if (globalErrors.length > 0) {
+                globalErrorContainer.innerHTML = globalErrors.join('<br>');
+                globalErrorContainer.style.display = 'block';
+                
+                const form = document.querySelector('form');
+                if (form) {
+                    form.insertBefore(globalErrorContainer, form.firstChild);
+                }
             }
         }
-
-        // Call the function
-        renderAssetCustomFields();
     });
-</script>
+    </script>
  
 @endsection

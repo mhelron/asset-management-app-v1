@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use App\Models\Category;
 use App\Models\Inventory;
 use App\Models\CustomField;
@@ -104,18 +105,117 @@ class InventoryController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        // Basic validation for main fields
+        $request->validateWithBag('inventoryForm', [
             'item_name' => 'required|string',
             'category_id' => 'required|exists:categories,id',
         ]);
-
-        try {
-            $customFields = $request->custom_fields ?? [];
+    
+        // Fetch the category to get its custom fields
+        $category = Category::findOrFail($request->category_id);
+        $categoryCustomFields = CustomField::whereJsonContains('applies_to', 'Asset')->get();
+    
+        // Prepare dynamic validation rules
+        $customValidationRules = [];
+        $customValidationMessages = [];
+    
+        foreach ($categoryCustomFields as $field) {
+            $fieldName = $field->name;
+            $rules = [];
+            $messages = [];
+    
+            // Required validation
+            if ($field->is_required) {
+                $rules[] = 'required';
+                $messages["custom_fields.{$fieldName}.required"] = 
+                    "The {$fieldName} field is required.";
+            }
+    
+            // Type-specific validations
+            switch ($field->type) {
+                case 'Text':
+                    // Add specific text type validations
+                    switch ($field->text_type) {
+                        case 'Email':
+                            $rules[] = 'email';
+                            $messages["custom_fields.{$fieldName}.email"] = 
+                                "The {$fieldName} must be a valid email address.";
+                            break;
+                        case 'Numeric':
+                            $rules[] = 'numeric';
+                            $messages["custom_fields.{$fieldName}.numeric"] = 
+                                "The {$fieldName} must be a number.";
+                            break;
+                        case 'Date':
+                            $rules[] = 'date';
+                            $messages["custom_fields.{$fieldName}.date"] = 
+                                "The {$fieldName} must be a valid date.";
+                            break;
+                        case 'Custom':
+                            if ($field->custom_regex) {
+                                $rules[] = "regex:{$field->custom_regex}";
+                                $messages["custom_fields.{$fieldName}.regex"] = 
+                                    "The {$fieldName} format is invalid.";
+                            }
+                            break;
+                    }
+                    break;
+    
+                case 'Select':
+                    $options = json_decode($field->options, true);
+                    if ($options) {
+                        $rules[] = 'in:' . implode(',', $options);
+                        $messages["custom_fields.{$fieldName}.in"] = 
+                            "The selected {$fieldName} is invalid.";
+                    }
+                    break;
+    
+                case 'Checkbox':
+                    $rules[] = 'array';
+                    $messages["custom_fields.{$fieldName}.array"] = 
+                        "The {$fieldName} must be a valid selection.";
+                    break;
+            }
+    
+            // Add rules if not empty
+            if (!empty($rules)) {
+                $customValidationRules["custom_fields.{$fieldName}"] = $rules;
+            }
             
+            // Add corresponding error messages
+            if (!empty($messages)) {
+                $customValidationMessages = array_merge($customValidationMessages, $messages);
+            }
+        }
+    
+        // Perform dynamic validation
+        if (!empty($customValidationRules)) {
+            $validator = Validator::make(
+                $request->all(), 
+                $customValidationRules, 
+                $customValidationMessages
+            );
+    
+            // If validation fails, redirect back with errors
+            if ($validator->fails()) {
+                return redirect()->back()
+                    ->withErrors($validator, 'customFields')
+                    ->withInput();
+            }
+        }
+    
+        try {
+            // Process and save the inventory item
+            $customFields = $request->input('custom_fields', []);
+            
+            // Handle file uploads
             if ($request->hasFile('custom_fields_files')) {
                 foreach ($request->file('custom_fields_files') as $field => $file) {
                     $path = $file->store('uploads/inventory');
-                    $customFields[$field] = ['path' => $path, 'original_name' => $file->getClientOriginalName()];
+                    $customFields[$field] = [
+                        'path' => $path, 
+                        'original_name' => $file->getClientOriginalName()
+                    ];
                 }
             }
             
@@ -125,11 +225,11 @@ class InventoryController extends Controller
                 'custom_fields' => $customFields,
                 'status' => 'Active',
             ]);
-
+    
             return redirect()->route('inventory.index')->with('success', 'Item added successfully');
         } catch (\Exception $e) {
             Log::error('Error adding inventory: ' . $e->getMessage());
-            return redirect()->route('inventory.create')->with('error', 'An error occurred: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'An error occurred: ' . $e->getMessage());
         }
     }
 
