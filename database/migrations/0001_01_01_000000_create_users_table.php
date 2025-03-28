@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('user_role');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->foreignId('department_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('department_id')->nullable()->constrained('departments')->onDelete('set null');
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

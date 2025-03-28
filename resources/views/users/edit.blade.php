@@ -33,7 +33,7 @@
 				<!-- Edit User Form -->
 				<div class="card">
 					<div class="card-body">
-						<form action="{{ url('users/update-user/'.$key) }}" method="POST">
+						<form action="{{ route('users.update', $user->id) }}" method="POST">
 							@csrf
 							@method('PUT')
 
@@ -44,7 +44,7 @@
 								<div class="col-md-6">
 									<div class="form-group mb-3">
 										<label>First Name</label>
-										<input type="text" name="first_name" value="{{ old('first_name', $editdata['first_name']) }}" class="form-control">
+										<input type="text" name="first_name" value="{{ old('first_name', $user->first_name) }}" class="form-control">
 										@error('first_name')
 											<small class="text-danger">{{ $message }}</small>
 										@enderror
@@ -55,7 +55,7 @@
 								<div class="col-md-6">
 									<div class="form-group mb-3">
 										<label>Last Name</label>
-										<input type="text" name="last_name" value="{{ old('last_name', $editdata['last_name']) }}" class="form-control">
+										<input type="text" name="last_name" value="{{ old('last_name', $user->last_name) }}" class="form-control">
 										@error('last_name')
 											<small class="text-danger">{{ $message }}</small>
 										@enderror
@@ -66,7 +66,7 @@
 								<div class="col-md-6">
 									<div class="form-group mb-3">
 										<label>Email</label>
-										<input type="text" name="email" value="{{ old('email', $editdata['email']) }}" class="form-control">
+										<input type="text" name="email" value="{{ old('email', $user->email) }}" class="form-control">
 										@error('email')
 											<small class="text-danger">{{ $message }}</small>
 										@enderror
@@ -80,15 +80,31 @@
 										<select name="user_role" class="form-control">
 											<option value="" disabled selected>Select a role</option>
 											@if(session('user_role') != 'Admin')
-                                                <option value="Super Admin" {{ old('user_role', $editdata['user_role']) == 'Super Admin'? 'selected' : '' }}>Super Admin</option>
+                                                <option value="Super Admin" {{ old('user_role', $user->user_role) == 'Super Admin'? 'selected' : '' }}>Super Admin</option>
 											@endif
-											<option value="Admin" {{ old('user_role', $editdata['user_role']) == 'Admin'? 'selected' : '' }}>Admin</option>
-											<option value="Manager" {{ old('user_role') == 'Manager' ? 'selected' : '' }}>Manager</option>
-											<option value="Staff" {{ old('user_role') == 'Staff' ? 'selected' : '' }}>Staff</option>
+											<option value="Admin" {{ old('user_role', $user->user_role) == 'Admin'? 'selected' : '' }}>Admin</option>
+											<option value="Manager" {{ old('user_role', $user->user_role) == 'Manager' ? 'selected' : '' }}>Manager</option>
+											<option value="Staff" {{ old('user_role', $user->user_role) == 'Staff' ? 'selected' : '' }}>Staff</option>
 										</select>
 										@error('user_role')
 											<small class="text-danger">{{ $message }}</small>
 										@enderror
+									</div>
+								</div>
+
+								<div class='row'>
+									<div class ="col-md-6">
+										<div class="form-group mb-3">
+											<label for="department_id" class="form-label">Department</label>
+											<select class="form-select" id="department_id" name="department_id" required>
+												<option value="">Select Department</option>
+												@foreach($departments as $department)
+													<option value="{{ $department->id }}" {{ $user->department_id == $department->id ? 'selected' : '' }}>
+														{{ $department->name }}
+													</option>
+												@endforeach
+											</select>
+										</div>
 									</div>
 								</div>
 

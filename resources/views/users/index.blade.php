@@ -58,6 +58,7 @@
                                         <th>#</th>
                                         <th>First Name</th>
                                         <th>Last Name</th>
+                                        <th>Department</th>
                                         <th>Email</th>
                                         <th>Role</th>
                                         <th>Options</th>
@@ -69,6 +70,7 @@
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $user->first_name }}</td>
                                         <td>{{ $user->last_name }}</td>
+                                        <td>{{ $user->department->name ?? 'N/A' }}</td>
                                         <td>{{ $user->email }}</td>
                                         <td>{{ $user->user_role }}</td>
                                         <td>
@@ -86,7 +88,7 @@
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="6" class="text-center">No user found</td>
+                                        <td colspan="7" class="text-center">No user found</td>
                                     </tr>
                                     @endforelse
                                 </tbody>

@@ -92,6 +92,23 @@
                                     </div>
                                 </div>
 
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label>Department <span class="text-danger">*</span></label>
+                                            <select name="department_id" class="form-control">
+                                                <option value="">Select a Department</option>
+                                                @foreach($departments as $department)
+                                                    <option value="{{ $department->id }}">{{ $department->name }}</option>
+                                                @endforeach
+                                            </select>
+                                            @error('department_id')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Password -->
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">

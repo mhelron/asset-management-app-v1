@@ -81,6 +81,10 @@
                                                 <td>{{ $user->user_role }}</td>
                                             </tr>
                                             <tr>
+                                                <th>Department</th>
+                                                <td>{{ $user->department->name ?? 'N/A' }}</td>
+                                            </tr>
+                                            <tr>
                                                 <th>Created At</th>
                                                 <td>{{ $user->created_at->format('d M Y') }}</td>
                                             </tr>

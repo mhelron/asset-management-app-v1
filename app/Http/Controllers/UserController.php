@@ -4,28 +4,32 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Department;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Crypt;
 
 class UserController extends Controller
 {
     public function index()
     {
         $users = User::all();
-        return view('users.index', compact('users'));
+        $departments = Department::all();
+
+        return view('users.index', compact('users', 'departments'));
     }
 
     public function view($id)
     {
         $user = User::findOrFail($id);
+        $departments = Department::all();
         return view('users.view', ['user' => $user, 'key' => $id]);
     }
 
     public function create()
     { 
-        return view('users.create');
+        $departments = Department::all();
+        return view('users.create', compact('departments'));
     }
 
     public function store(Request $request)
@@ -34,21 +38,18 @@ class UserController extends Controller
             'user_role' => 'required',
             'first_name' => 'required|regex:/^[a-zA-Z\s\-]+$/',
             'last_name' => 'required|regex:/^[a-zA-Z\s]+$/',
-            'email' => 'required|email:rfc,dns|unique:users,email',
-            'password' => [
-                'required',
-                'min:8',
-                'regex:/^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]+$/',
-                'confirmed',
-            ],
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8|confirmed',
+            'department_id' => 'required|exists:departments,id',
         ]);
-
-        $user = User::create([
+    
+        User::create([
             'user_role' => $validatedData['user_role'],
             'first_name' => $validatedData['first_name'],
             'last_name' => $validatedData['last_name'],
             'email' => $validatedData['email'],
             'password' => Hash::make($validatedData['password']),
+            'department_id' => $validatedData['department_id'],
         ]);
 
         /* Log the activity
@@ -64,8 +65,8 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = User::findOrFail($id);
-
-        return view('users.edit', ['editdata' => $user, 'key' => $id]);
+        $departments = Department::all();
+        return view('users.edit', compact('user', 'departments'));
     }
 
     
@@ -79,6 +80,7 @@ class UserController extends Controller
             'last_name' => 'required|regex:/^[a-zA-Z\s]+$/',
             'email' => 'required|email|unique:users,email,' . $id,
             'password' => 'nullable|min:8|regex:/^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]+$/|confirmed',
+            'department_id' => 'required|exists:departments,id', // Ensure department is selected
         ]);
 
         $user->update([ 
@@ -86,6 +88,7 @@ class UserController extends Controller
             'first_name' => $validatedData['first_name'],
             'last_name' => $validatedData['last_name'],
             'email' => $validatedData['email'],
+            'department_id' => $validatedData['department_id'], // Update department
             'password' => $request->filled('password') ? Hash::make($validatedData['password']) : $user->password,
         ]);
 
