@@ -88,27 +88,34 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($customFields as $customField)
+                                        @if ($customFields->isEmpty())
                                             <tr>
-                                                <td class="text-center">
-                                                    <input type="checkbox" name="custom_fields[]" value="{{ $customField->id }}" 
-                                                    {{ in_array($customField->id, old('custom_fields', [])) ? 'checked' : '' }}>
-                                                </td>
-                                                <td>{{ $customField->name }}</td>
-                                                <td>{{ ucfirst($customField->type) }}</td>
-                                                <td>
-                                                    @if ($customField->type === 'text')
-                                                        User Input
-                                                    @elseif (in_array($customField->type, ['List', 'Checkbox', 'Radio', 'Select']) && !empty($customField->options))
-                                                        {{ implode(', ', json_decode($customField->options, true)) }}
-                                                    @else
-                                                        N/A
-                                                    @endif
-                                                </td>
-                                                <td>{{ $customField->desc }}</td>
+                                                <td colspan="5" class="text-center">No custom field found</td>
                                             </tr>
-                                        @endforeach
+                                        @else
+                                            @foreach($customFields as $customField)
+                                                <tr>
+                                                    <td class="text-center">
+                                                        <input type="checkbox" name="custom_fields[]" value="{{ $customField->id }}" 
+                                                        {{ in_array($customField->id, old('custom_fields', [])) ? 'checked' : '' }}>
+                                                    </td>
+                                                    <td>{{ $customField->name }}</td>
+                                                    <td>{{ ucfirst($customField->type) }}</td>
+                                                    <td>
+                                                        @if ($customField->type === 'text')
+                                                            User Input
+                                                        @elseif (in_array($customField->type, ['List', 'Checkbox', 'Radio', 'Select']) && !empty($customField->options))
+                                                            {{ implode(', ', json_decode($customField->options, true)) }}
+                                                        @else
+                                                            N/A
+                                                        @endif
+                                                    </td>
+                                                    <td>{{ $customField->desc }}</td>
+                                                </tr>
+                                            @endforeach
+                                        @endif
                                     </tbody>
+                                    
                                 </table>
                             </div>
 

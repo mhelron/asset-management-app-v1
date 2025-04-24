@@ -13,7 +13,17 @@ return new class extends Migration
         Schema::create('inventories', function (Blueprint $table) {
             $table->id();
             $table->string('item_name');
-            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
+            $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('set null');
+            $table->foreignId('department_id')->nullable()->constrained('departments')->onDelete('set null');
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->string('serial_no')->unique();
+            $table->string('asset_tag')->unique();
+            $table->string('model_no');
+            $table->string('manufacturer');
+            $table->date('date_purchased');
+            $table->string('purchased_from');
+            $table->string('image_path')->nullable()->after('status');
+            $table->text('log_note')->nullable();
             $table->json('custom_fields')->nullable();
             $table->string('status')->default('Active');
             $table->timestamps();

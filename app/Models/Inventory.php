@@ -11,7 +11,17 @@ class Inventory extends Model {
 
     protected $fillable = [
         'item_name', 
-        'category_id', 
+        'category_id',
+        'department_id',
+        'user_id',
+        'asset_tag',
+        'serial_no',
+        'model_no',
+        'manufacturer',
+        'date_purchased',
+        'purchased_from',
+        'image_path',
+        'log_note',
         'custom_fields', 
         'status'
     ];

@@ -130,8 +130,9 @@
                             
                             <!-- Submit button -->
                             <div class="form-group mb-3">
-                                <button type="submit" class="btn btn-primary float-end"><i class="bi bi-pencil-square me-2"></i>Update Category</button>
+                                <button type="submit" class="btn btn-dark float-end"><i class="bi bi-pencil-square me-2"></i>Update Category</button>
                             </div>
+                                
                         </form>
                     </div>
                 </div>

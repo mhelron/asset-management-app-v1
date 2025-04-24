@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Category;
+use App\Models\Department;
+use App\Models\User;
 use App\Models\Inventory;
 use App\Models\CustomField;
 
@@ -30,17 +32,19 @@ class InventoryController extends Controller
             if (!$category) {
                 return response()->json(['error' => 'Category not found'], 404);
             }
-
-            $customFields = json_decode($category->custom_fields, true) ?? [];
-
+    
+            // Get the custom field IDs
+            $customFieldIds = json_decode($category->custom_fields, true) ?? [];
+            
+            // Fetch the actual custom field objects
+            $customFields = CustomField::whereIn('id', $customFieldIds)->get();
+            
             return response()->json($customFields);
         } catch (\Exception $e) {
             Log::error('Error fetching category fields: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
-    
 
     public function getItemDetails($id)
     {
@@ -93,22 +97,53 @@ class InventoryController extends Controller
             return response()->json([], 404);
         }
     }
+
+    public function generateAssetTag($length = 10) {
+        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        
+        return $randomString;
+    }
         
     public function create() {
         $categories = Category::all();
+        $departments = Department::all();
+        $users = User::all();
         
-        // Filter custom fields that apply to Asset
+        $assetTag = old('asset_tag') ?: $this->generateAssetTag();
+        
         $assetCustomFields = CustomField::whereJsonContains('applies_to', 'Asset')->get();
-        
-        return view('inventory.create', compact('categories', 'assetCustomFields'));
+    
+        return view('inventory.create', compact('categories', 'departments', 'users', 'assetTag', 'assetCustomFields'));
     }
 
     public function store(Request $request)
     {
-        // Basic validation for main fields
+        $existingItem = Inventory::withTrashed()
+            ->where('serial_no', $request->serial_no)
+            ->first();
+        
+        if ($existingItem && $existingItem->trashed()) {
+            $existingItem->forceDelete();
+        }
+        
         $request->validateWithBag('inventoryForm', [
             'item_name' => 'required|string',
             'category_id' => 'required|exists:categories,id',
+            'department_id' => 'nullable|exists:departments,id',
+            'users_id' => 'nullable|exists:users,id',
+            'serial_no' => 'required|unique:inventories,serial_no',
+            'model_no' => 'required|string|max:255',
+            'manufacturer' => 'required|string|max:255',
+            'date_purchased' => 'required|date',
+            'purchased_from' => 'required|string|max:255',
+            'asset_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'log_note' => 'nullable|string'
         ]);
     
         // Fetch the category to get its custom fields
@@ -211,17 +246,36 @@ class InventoryController extends Controller
             // Handle file uploads
             if ($request->hasFile('custom_fields_files')) {
                 foreach ($request->file('custom_fields_files') as $field => $file) {
-                    $path = $file->store('uploads/inventory');
+                    $path = $file->store('inventory', 'public');
                     $customFields[$field] = [
                         'path' => $path, 
                         'original_name' => $file->getClientOriginalName()
                     ];
                 }
             }
+
+            // Handle asset image upload
+            $imagePath = null;
+                if ($request->hasFile('asset_image')) {
+                    $imagePath = $request->file('asset_image')->store('assets', 'public');
+                }
+
+
+            $validatedData['asset_tag'] = $this->generateAssetTag();
             
             Inventory::create([
                 'item_name' => $request->item_name,
                 'category_id' => $request->category_id,
+                'department_id' => $request->department_id,
+                'users_id' => $request->users_id,
+                'asset_tag' => $request->asset_tag,
+                'serial_no' => $request->serial_no,
+                'model_no' => $request->model_no,
+                'manufacturer' => $request->manufacturer,
+                'date_purchased' => $request->date_purchased,
+                'purchased_from' => $request->purchased_from,
+                'image_path' => $imagePath,
+                'log_note' => $request->log_note,
                 'custom_fields' => $customFields,
                 'status' => 'Active',
             ]);
@@ -246,6 +300,16 @@ class InventoryController extends Controller
         $request->validate([
             'item_name' => 'required|string',
             'category_id' => 'required|exists:categories,id',
+            'department_id' => 'required|exists:departments,id',
+            'users_id' => 'required|exists:users,id',
+            'asset_tag' => 'required|unique:inventories,serial_no',
+            'serial_no' => 'required|unique:components,serial_no',
+            'model_no' => 'required|string|max:255',
+            'manufacturer' => 'required|string|max:255',
+            'assigned' => 'nullable|string|max:255',
+            'date_purchased' => 'required|date',
+            'purchased_from' => 'required|string|max:255',
+            'log_note' => 'nullable|string'
         ]);
 
         try {

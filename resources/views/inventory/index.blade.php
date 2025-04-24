@@ -52,51 +52,38 @@
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Item</th>
+                                        <th>Asset</th>
+                                        <th>Image</th>
+                                        <th>Asset Tag</th>
+                                        <th>Serial No.</th>
+                                        <th>Model</th>
                                         <th>Category</th>
                                         <th>Status</th>
-
-                                        @foreach($assetCustomFields as $field)
-                                            <th>{{ $field->name }}</th>
-                                        @endforeach
-
                                         <th>Options</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse ($inventory as $index => $item)
-                                    <tr>
+                                    <tr class="align-middle">
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $item->item_name }}</td>
-                                        <td>{{ optional($item->category)->category ?? 'No Category' }}</td>
-                                        <td>{{ $item->status }}</td>
-
-                                        <!-- Dynamic custom field values -->
-                                        @foreach($assetCustomFields as $field)
                                         <td>
-                                            @php
-                                                $customFieldsData = is_string($item->custom_fields) ? json_decode($item->custom_fields, true) : $item->custom_fields;
-                                                $fieldValue = $customFieldsData[$field->name] ?? '-';
-                                                
-                                                // Handle different field types appropriately
-                                                if (is_array($fieldValue)) {
-                                                    if (isset($fieldValue['original_name'])) {
-                                                        echo '<a href="/storage/'.$fieldValue['path'].'" target="_blank">'.$fieldValue['original_name'].'</a>';
-                                                    } else {
-                                                        echo implode(', ', $fieldValue);
-                                                    }
-                                                } else {
-                                                    echo $fieldValue;
-                                                }
-                                            @endphp
+                                            @if($item->image_path)
+                                                <img src="{{ asset('storage/' . $item->image_path) }}" alt="Asset Image" width="100">
+                                            @else
+                                                <span class="text-muted">No image</span>
+                                            @endif
                                         </td>
-                                    @endforeach
-
+                                        <td>{{ $item->asset_tag }}</td>
+                                        <td>{{ $item->serial_no }}</td>
+                                        <td>{{ $item->model_no }}</td>
+                                        <td>{{ $item->category->category ?? 'N/A' }}</td>
+                                        <td>{{ $item->status }}</td>
                                         <td>
                                             <div class="d-flex">
-                                                <button type="button" class="btn btn-sm btn-primary me-2 view-details-btn" 
+                                                <button type="button" class="btn btn-sm btn-dark me-2 view-details-btn" 
                                                     data-id="{{ $item->id }}" data-name="{{ $item->item_name }}">
-                                                    <i class="bi bi-eye me-2"></i>View Details
+                                                    <i class="bi bi-eye me-2"></i>View
                                                 </button>
                                                 <a href="{{ route('inventory.edit', $item->id) }}" class="btn btn-sm btn-success me-2">
                                                     <i class="bi bi-pencil-square me-2"></i>Edit</a>

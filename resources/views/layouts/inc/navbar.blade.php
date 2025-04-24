@@ -20,40 +20,57 @@
     
         <ul class="sidebar-nav">
             <li class="sidebar-item">
-                <a href="#" class="sidebar-link">
-                    <i class="bi bi-person-circle"></i>
-                    <span class="ms-2">My Profile</span>
-                </a>
-            </li>
-            <li class="sidebar-item">
                 <a href="{{ route('dashboard.index') }}" class="sidebar-link {{ request()->routeIs('dashboard.index') ? 'active' : '' }}">
                     <i class="bi bi-house"></i>
                     <span class="ms-2">Dashboard</span>
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="{{ route('inventory.index') }}" class="sidebar-link {{ request()->routeIs('inventory.index', 'inventory.create', 'inventory.edit') ? 'active' : '' }}">
-                    <i class="bi bi-box-seam"></i>
-                    <span class="ms-2">Assets</span>
+                <a href="#" class="sidebar-link">
+                    <i class="bi bi-person-circle"></i>
+                    <span class="ms-2">My Profile</span>
                 </a>
-            </li>
+            </li>   
             <li class="sidebar-item">
-                <a href="{{ route('components.index') }}" class="sidebar-link {{ request()->routeIs('components.index', 'components.create', 'components.edit') ? 'active' : '' }}">
-                    <i class="bi bi-boxes"></i>
-                    <span class="ms-2">Components</span>
+                <a href="#inventoryACollapse" class="sidebar-link d-flex align-items-center" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="inventoryACollapse">
+                    <i class="bi bi-clipboard"></i>
+                    <span class="ms-2">Inventory</span>
+                    <i class="bi bi-chevron-left ms-auto chevron-icon"></i>
                 </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="{{ route('accessory.index') }}" class="sidebar-link {{ request()->routeIs('accessory.index', 'accessory.create', 'accessory.edit') ? 'active' : '' }}">
-                    <i class="bi bi-headphones"></i>
-                    <span class="ms-2">Accessories</span>
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="{{ route('users.index') }}" class="sidebar-link {{ request()->routeIs('users.index', 'users.create', 'users.edit', 'users.view ') ? 'active' : '' }}"">
-                    <i class="bi bi-people"></i>
-                    <span class="ms-2">Users</span>
-                </a>
+                <div class="collapse sidebar-collapse" id="inventoryACollapse">
+                    <ul class="sidebar-submenu">
+                        <li class="sidebar-item">
+                            <a href="{{ route('inventory.index') }}" class="sidebar-link {{ request()->routeIs('inventory.index', 'inventory.create', 'inventory.edit') ? 'active' : '' }}">
+                                <i class="bi bi-box-seam"></i>
+                                <span class="ms-2">Assets</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="{{ route('components.index') }}" class="sidebar-link {{ request()->routeIs('components.index', 'components.create', 'components.edit') ? 'active' : '' }}">
+                                <i class="bi bi-boxes"></i>
+                                <span class="ms-2">Components</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="{{ route('accessory.index') }}" class="sidebar-link {{ request()->routeIs('accessory.index', 'accessory.create', 'accessory.edit') ? 'active' : '' }}">
+                                <i class="bi bi-headphones"></i>
+                                <span class="ms-2">Accessories</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="{{ route('accessory.index') }}" class="sidebar-link {{ request()->routeIs('accessory.index', 'accessory.create', 'accessory.edit') ? 'active' : '' }}">
+                                <i class="bi bi-droplet"></i>
+                                <span class="ms-2">Consumables</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="{{ route('accessory.index') }}" class="sidebar-link {{ request()->routeIs('accessory.index', 'accessory.create', 'accessory.edit') ? 'active' : '' }}">
+                                <i class="bi bi-key"></i>
+                                <span class="ms-2">Licenses</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </li>
             <li class="sidebar-item">
                 <a href="#settingsCollapse" class="sidebar-link d-flex align-items-center" data-bs-toggle="collapse" role="button" aria-expanded="{{ request()->routeIs('customfields.index') || request()->routeIs('categories.index') || request()->routeIs('departments.index') ? 'true' : 'false' }}" aria-controls="settingsCollapse">
@@ -76,9 +93,21 @@
                             </a>
                         </li>
                         <li class="sidebar-item">
+                            <a href="{{ route('users.index') }}" class="sidebar-link {{ request()->routeIs('users.index', 'users.create', 'users.edit', 'users.view ') ? 'active' : '' }}"">
+                                <i class="bi bi-people"></i>
+                                <span class="ms-2">Users</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
                             <a href="{{ route('departments.index') }}" class="sidebar-link {{ request()->routeIs('departments.index', 'department.create', 'department.edit') ? 'active' : '' }}">
                                 <i class="bi bi-building"></i>
                                 <span class="ms-2">Departments</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="#" class="sidebar-link">
+                                <i class="bi bi-sliders"></i>
+                                <span class="ms-2">Appearance</span>
                             </a>
                         </li>
                     </ul>
@@ -95,13 +124,13 @@
                         <li class="sidebar-item">
                             <a href="#" class="sidebar-link">
                                 <i class="bi bi-bootstrap-fill"></i>
-                                <span>Sample</span>
+                                <span class="ms-2">Activity Logs</span>
                             </a>
                         </li>
                         <li class="sidebar-item">
                             <a href="#" class="sidebar-link">
                                 <i class="bi bi-bootstrap-fill"></i>
-                                <span>Sample</span>
+                                <span class="ms-2">Sample</span>
                             </a>
                         </li>
                     </ul>
