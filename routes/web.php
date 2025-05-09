@@ -12,7 +12,6 @@ use App\Http\Controllers\AccessoryController;
 use App\Http\Controllers\LoginController;
 
 
-
 //Logout Route
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 

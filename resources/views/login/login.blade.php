@@ -9,10 +9,13 @@
     body {
       background-color: #f8f9fa;
       min-height: 100vh;
+      color: #444;
+    }
+    .main-wrapper {
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #444;
+      min-height: calc(100vh - 56px); /* subtract navbar height */
     }
     .card {
       background-color: #fff;
@@ -48,49 +51,56 @@
 </head>
 <body>
 
-<div class="container">
-  <div class="row justify-content-center">
-    <div class="col-md-5 col-lg-4">
-      <div class="card p-4">
-        <div class="card-body">
-          <h3 class="card-title text-center mb-4">Login</h3>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" href="#">Asset Inventory Management</a>
+  </div>
+</nav>
 
-          @if(session('error'))
-            <div class="alert alert-danger">
-              {{ session('error') }}
-            </div>
-          @endif
+<div class="main-wrapper">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-5 col-lg-4">
+        <div class="card p-4">
+          <div class="card-body">
+            <h3 class="card-title text-center mb-4">Login</h3>
 
-          <form method="POST" action="{{ route('login') }}">
-            @csrf
-
-            <div class="mb-3">
-              <label for="email" class="form-label">Email Address</label>
-              <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}" required autofocus>
-            </div>
-
-            <div class="mb-3">
-              <label for="password" class="form-label">Password</label>
-              <input type="password" name="password" id="password" class="form-control" required>
-            </div>
-
-            <div class="form-check mb-3">
-              <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-              <label class="form-check-label" for="remember">Remember Me</label>
-            </div>
-
-            <div class="d-grid mb-3">
-              <button type="submit" class="btn btn-primary">Login</button>
-            </div>
-            <!--
-            <div class="text-center">
-                <small>Forgot your password? 
-                    <a href="#" onclick="alert('This feature is not working yet. Di pa sya nagana mag hintay ka muna'); return false;">Click Here</a>
-                </small>
-            </div> -->
+            @if($error = session()->pull('error'))
+                <div class="alert alert-danger">
+                    {{ $error }}
+                </div>
+            @endif
 
 
-          </form>
+            <form method="POST" action="{{ route('login') }}">
+              @csrf
+
+              <div class="mb-3">
+                <label for="email" class="form-label">Email Address</label>
+                <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}" required autofocus>
+              </div>
+
+              <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" name="password" id="password" class="form-control" required>
+              </div>
+
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+                <label class="form-check-label" for="remember">Remember Me</label>
+              </div>
+
+              <div class="d-grid mb-3">
+                <button type="submit" class="btn btn-primary">Login</button>
+              </div>
+              <!--
+              <div class="text-center">
+                  <small>Forgot your password? 
+                      <a href="#" onclick="alert('This feature is not working yet. Di pa sya nagana mag hintay ka muna'); return false;">Click Here</a>
+                  </small>
+              </div> -->
+            </form>
+          </div>
         </div>
       </div>
     </div>

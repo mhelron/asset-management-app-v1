@@ -16,44 +16,39 @@ class LoginController extends Controller
         if (auth()->check()) {
             $previousUrl = url()->previous();
     
-            // If the previous URL is login, redirect to dashboard
             if ($previousUrl === route('login.form')) {
-                return redirect()->route('dashboard.index');
+                return redirect()->route('dashboard');
             }
     
-            // Redirect back to the previous page (like categories, dashboard, etc.)
             return redirect()->to($previousUrl);
         }
-
-    // Check if the previous URL was a protected page
-    $intendedUrl = session('url.intended');
-
-    // Protected routes (Para sa error message ng protected routes)
-    $protectedRoutes = [
-        url('/dashboard'),
-        url('/users'),
-        url('/categories'),
-        url('/inventory'),
-        url('/custom-fields'),
-        url('/departments'),
-        url('/components'),
-        url('/accessories'),
-    ];
-
-    $currentPath = '/' . request()->path(); // e.g. '/users/create-user'
-
-
-    if ($intendedUrl) {
-        foreach ($protectedRoutes as $prefix) {
-            if (Str::startsWith($intendedUrl, $prefix)) {
-                session()->flash('error', 'You must be logged in to access this page.');
-                break;
+    
+        $intendedUrl = session('url.intended');
+        $previousUrl = url()->previous();
+    
+        $protectedRoutes = [
+            url('/dashboard'),
+            url('/users'),
+            url('/categories'),
+            url('/inventory'),
+            url('/custom-fields'),
+            url('/departments'),
+            url('/components'),
+            url('/accessories'),
+        ];
+    
+        if ($intendedUrl && $previousUrl !== url()->current()) {
+            foreach ($protectedRoutes as $prefix) {
+                if (Str::startsWith($intendedUrl, $prefix)) {
+                    session()->flash('error', 'You must be logged in to access this page.');
+                    break;
+                }
             }
         }
+    
+        return view('login.login');
     }
-
-         return view('login.login');
-    }
+    
 
 
     public function processLogin (Request $request) {
@@ -74,6 +69,18 @@ class LoginController extends Controller
         if (Auth::attempt(['email' => $email, 'password' => $password], $remember)) {
             $request->session()->regenerate();
             session(['email' => Auth::user()->email]);
+
+
+            // Set session variables for displaying user information
+            $fullName = Auth::user()->first_name . ' ' . Auth::user()->last_name;
+
+            session([
+                'email' => Auth::user()->email,
+                'name' => $fullName,
+                'user_role' => Auth::user()->user_role,
+            ]);
+
+
 
             // Clear the stored intended URL so it won't redirect there
             session()->forget('url.intended');

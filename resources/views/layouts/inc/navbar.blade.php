@@ -5,11 +5,25 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <a class="navbar-brand" href="{{ route('dashboard.index') }}">Asset Inventory Management</a>
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-    
-            </li>
-        </ul>
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center" style="margin-left: auto; padding-right: 0;">
+        <li class="nav-item me-2 text-light">
+            <!-- Display the user's name in the navbar -->
+            <span style="display: block; text-align: right; font-size: 0.8em; font-weight: bold;">
+                {{ session('name') }}
+            </span>
+            <!-- Display the user's role below the name, with a smaller font size -->
+            <span style="display: block; text-align: right; font-size: 0.8em; ">
+                {{ session('user_role') }}
+            </span>
+        </li>
+
+        <li class="nav-item">
+            <!-- Display the user's profile picture in the navbar -->
+            <img src="{{ asset('images/default-user.jpg') }}" alt="Profile Picture"class="rounded-circle" width="40" height="40">
+        </li>
+    </ul>
+      </div>
+
     </nav>
     
     <div class="offcanvas offcanvas-start bg-dark" tabindex="-1" id="staticBackdrop" aria-labelledby="staticBackdropLabel">
@@ -166,6 +180,6 @@
                 </div>
             </div>
     
-            <form id="logout-form" action="#" method="POST" style="display: none;">
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                 @csrf
             </form>
