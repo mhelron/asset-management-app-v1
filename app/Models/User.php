@@ -54,4 +54,14 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Department::class);
     }
+    
+    public function components()
+    {
+        return $this->hasMany(Components::class, 'users_id');
+    }
+    
+    public function assets()
+    {
+        return $this->hasMany(Inventory::class, 'users_id');
+    }
 }

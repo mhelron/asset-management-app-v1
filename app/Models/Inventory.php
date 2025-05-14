@@ -13,7 +13,7 @@ class Inventory extends Model {
         'item_name', 
         'category_id',
         'department_id',
-        'user_id',
+        'users_id',
         'asset_tag',
         'serial_no',
         'model_no',
@@ -39,5 +39,20 @@ class Inventory extends Model {
     {
         return $this->belongsTo(Category::class, 'category_id');
     }
-
+    
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_id');
+    }
+    
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'users_id');
+    }
+    
+    // Define relationship with components
+    public function components()
+    {
+        return $this->hasMany(Components::class, 'inventory_id');
+    }
 }

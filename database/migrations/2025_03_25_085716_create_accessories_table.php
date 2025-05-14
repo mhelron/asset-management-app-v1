@@ -15,14 +15,14 @@ return new class extends Migration
             $table->id();
             $table->string('accessory_name');
             $table->string('category');
-            $table->string('department');
             $table->string('serial_no')->unique();
             $table->string('model_no');
             $table->string('manufacturer');
-            $table->string('assigned')->nullable();
+            $table->foreignId('users_id')->nullable()->constrained('users')->onDelete('set null');
             $table->date('date_purchased');
             $table->string('purchased_from');
             $table->text('log_note')->nullable();
+            $table->foreignId('inventory_id')->nullable()->constrained('inventories')->onDelete('set null');
             $table->softDeletes();
             $table->timestamps();
         });

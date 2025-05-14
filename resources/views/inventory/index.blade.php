@@ -81,16 +81,16 @@
                                         <td>{{ $item->status }}</td>
                                         <td>
                                             <div class="d-flex">
-                                                <button type="button" class="btn btn-sm btn-dark me-2 view-details-btn" 
-                                                    data-id="{{ $item->id }}" data-name="{{ $item->item_name }}">
-                                                    <i class="bi bi-eye me-2"></i>View
-                                                </button>
+                                                <a href="{{ route('inventory.show', $item->id) }}" class="btn btn-sm btn-dark me-2">
+                                                    <i class="bi bi-eye me-1"></i>View
+                                                </a>
                                                 <a href="{{ route('inventory.edit', $item->id) }}" class="btn btn-sm btn-success me-2">
-                                                    <i class="bi bi-pencil-square me-2"></i>Edit</a>
+                                                    <i class="bi bi-pencil-square me-1"></i>Edit
+                                                </a>
                                                 <button type="button" class="btn btn-sm btn-secondary archive-btn" 
                                                     data-bs-toggle="modal" data-bs-target="#archiveModal" 
                                                     data-id="{{ $item->id }}" data-name="{{ $item->item_name }}">
-                                                    <i class="bi bi-archive me-2"></i>Archive
+                                                    <i class="bi bi-archive me-1"></i>Archive
                                                 </button>
                                             </div>
                                         </td>
@@ -145,80 +145,5 @@
         });
     });
 </script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    // Get all view details buttons
-    const viewButtons = document.querySelectorAll('.view-details-btn');
-    
-    // Debug check
-    console.log('Found view buttons:', viewButtons.length);
-    
-    viewButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const itemId = this.getAttribute('data-id');
-            const itemName = this.getAttribute('data-name');
-            
-            console.log('Viewing details for item:', itemId, itemName);
-            
-            // Update modal title to include the item name
-            document.getElementById('viewDetailsModalLabel').textContent = `Custom Fields - ${itemName}`;
-            
-            // Show loading state in the table
-            const customFieldsTable = document.getElementById('customFieldsTable');
-            customFieldsTable.innerHTML = '<tr><td colspan="3" class="text-center">Loading...</td></tr>';
-            
-            // Show the modal immediately to improve perceived performance
-            const viewModal = new bootstrap.Modal(document.getElementById('viewDetailsModal'));
-            viewModal.show();
-            
-            // Correct URL path that matches your route
-            const url = `/inventory/get-custom-fields/${itemId}`;
-            console.log('Fetching from URL:', url);
-            
-            // Then fetch the data
-            fetch(url)
-                .then(response => {
-                    console.log('Response status:', response.status);
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok: ' + response.status);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Received data:', data);
-                    customFieldsTable.innerHTML = ''; // Clear loading message
-                    
-                    if (data && data.length > 0) {
-                        data.forEach(field => {
-                            let row = document.createElement('tr');
-                            row.innerHTML = `
-                                <td>${field.name}</td>
-                                <td>${field.type}</td>
-                                <td>${field.is_required ? 'Yes' : 'No'}</td>
-                            `;
-                            customFieldsTable.appendChild(row);
-                        });
-                    } else {
-                        customFieldsTable.innerHTML = `
-                            <tr>
-                                <td colspan="3" class="text-center text-muted">No custom fields available</td>
-                            </tr>
-                        `;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching custom fields:', error);
-                    customFieldsTable.innerHTML = `
-                        <tr>
-                            <td colspan="3" class="text-center text-danger">Error loading custom fields: ${error.message}</td>
-                        </tr>
-                    `;
-                });
-        });
-    });
-});
-    </script>
-    
 
 @endsection

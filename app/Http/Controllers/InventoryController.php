@@ -493,4 +493,19 @@ class InventoryController extends Controller
         return redirect()->route('inventory.index')->with('error', 'Inventory item not found.');
     }
 
+    public function show($id)
+    {
+        try {
+            $inventory = Inventory::with(['category', 'components', 'user', 'department'])->findOrFail($id);
+            
+            // Get all custom fields for assets
+            $assetCustomFields = CustomField::whereJsonContains('applies_to', 'Asset')->get();
+            
+            return view('inventory.show', compact('inventory', 'assetCustomFields'));
+        } catch (\Exception $e) {
+            Log::error('Error viewing inventory details: ' . $e->getMessage());
+            return redirect()->route('inventory.index')->with('error', 'Error viewing asset details: ' . $e->getMessage());
+        }
+    }
+
 }

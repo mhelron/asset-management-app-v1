@@ -21,8 +21,7 @@ class UserController extends Controller
 
     public function view($id)
     {
-        $user = User::findOrFail($id);
-        $departments = Department::all();
+        $user = User::with(['assets', 'components', 'department'])->findOrFail($id);
         return view('users.view', ['user' => $user, 'key' => $id]);
     }
 

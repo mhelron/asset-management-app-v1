@@ -60,10 +60,11 @@ Route::middleware(['auth'])->group(function () {
         Route::post('add-inventory', [InventoryController::class, 'store'])->name('inventory.store');
         Route::get('edit-inventory/{id}', [InventoryController::class, 'edit'])->name('inventory.edit');
         Route::put('update-inventory/{id}', [InventoryController::class, 'update'])->name('inventory.update');
-        Route::delete('/archive-item/{id}', [InventoryController::class, 'archive'])->name('inventory.archive');
+        Route::delete('archive-item/{id}', [InventoryController::class, 'archive'])->name('inventory.archive');
+        Route::get('show-inventory/{id}', [InventoryController::class, 'show'])->name('inventory.show');
         Route::get('get-category-fields/{id}', [InventoryController::class, 'getCategoryFields'])->name('inventory.category.fields');
-        Route::get('/get-item-details/{id}', [InventoryController::class, 'getItemDetails']);
-        Route::get('/get-custom-fields/{id}', [InventoryController::class, 'getCustomFields']);
+        Route::get('get-item-details/{id}', [InventoryController::class, 'getItemDetails']);
+        Route::get('get-custom-fields/{id}', [InventoryController::class, 'getCustomFields']);
     });
 
     // Custom Fields Route

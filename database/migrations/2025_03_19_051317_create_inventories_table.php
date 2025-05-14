@@ -15,14 +15,14 @@ return new class extends Migration
             $table->string('item_name');
             $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('set null');
             $table->foreignId('department_id')->nullable()->constrained('departments')->onDelete('set null');
-            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('users_id')->nullable()->constrained('users')->onDelete('set null');
             $table->string('serial_no')->unique();
             $table->string('asset_tag')->unique();
             $table->string('model_no');
             $table->string('manufacturer');
             $table->date('date_purchased');
             $table->string('purchased_from');
-            $table->string('image_path')->nullable()->after('status');
+            $table->string('image_path')->nullable();
             $table->text('log_note')->nullable();
             $table->json('custom_fields')->nullable();
             $table->string('status')->default('Active');
@@ -32,9 +32,6 @@ return new class extends Migration
     }
 
     public function down() {
-        Schema::dropIfExists('inventory');
-        Schema::table('inventories', function (Blueprint $table) {
-            $table->dropSoftDeletes();
-        });
+        Schema::dropIfExists('inventories');
     }
 };

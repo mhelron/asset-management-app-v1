@@ -23,7 +23,7 @@
             <div class="col-lg-12">
                 <!-- Alert Box for Success -->
                 @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show">
+                    <div class="alert alert-success alert-dismissible fade show" style="border-left: 4px solid #28a745; padding: 10px;">
                         <i class="bi bi-check-circle me-2"></i>
                         {{ session('success') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -31,7 +31,7 @@
                 @endif
                 <!-- Alert Box for Errors-->
                 @if (session('error'))
-                    <div class="alert alert-danger alert-dismissible fade show">
+                    <div class="alert alert-danger alert-dismissible fade show" style="border-left: 4px solid #dc3545; padding: 10px;">
                         <i class="bi bi-exclamation-diamond me-2"></i>
                         {{ session('error') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -52,9 +52,10 @@
                                         <th>#</th>
                                         <th>Component Name</th>
                                         <th>Category</th>
-                                        <th>Department</th>
                                         <th>Serial No</th>
                                         <th>Manufacturer</th>
+                                        <th>Assigned To</th>
+                                        <th>Associated Asset</th>
                                         <th>Options</th>
                                     </tr>
                                 </thead>
@@ -65,9 +66,27 @@
                                         <td>{{ $i++ }}</td>
                                         <td>{{ $component->component_name }}</td>
                                         <td>{{ $component->category }}</td>
-                                        <td>{{ $component->department }}</td>
                                         <td>{{ $component->serial_no }}</td>
                                         <td>{{ $component->manufacturer }}</td>
+                                        <td>
+                                            @if($component->user)
+                                                <span class="badge bg-success">
+                                                    {{ $component->user->first_name }} {{ $component->user->last_name }}
+                                                </span>
+                                            @else
+                                                <span class="badge bg-secondary">Not assigned</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($component->inventory)
+                                                <span class="badge bg-info">
+                                                    {{ $component->inventory->item_name }} 
+                                                    ({{ $component->inventory->asset_tag }})
+                                                </span>
+                                            @else
+                                                <span class="badge bg-secondary">None</span>
+                                            @endif
+                                        </td>
                                         <td>
                                             <div class="d-flex">
                                                 <a href="{{ route('components.show', $component) }}" class="btn btn-sm btn-dark me-2">
@@ -88,7 +107,7 @@
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="7" class="text-center">No components found</td>
+                                        <td colspan="8" class="text-center">No components found</td>
                                     </tr>
                                     @endforelse
                                 </tbody>

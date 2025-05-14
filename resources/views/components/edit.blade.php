@@ -43,20 +43,18 @@
                                         @enderror
                                     </div>
 
-                                    <!-- Category -->
+                                    <!-- Category Dropdown -->
                                     <div class="form-group mb-3">
                                         <label>Category<span class="text-danger"> *</span></label>
-                                        <input type="text" name="category" value="{{ old('category', $component->category) }}" class="form-control" placeholder="Enter category" required>
+                                        <select name="category" class="form-control" required>
+                                            <option value="" disabled>Select Category</option>
+                                            @foreach($categories as $id => $category)
+                                                <option value="{{ $category }}" {{ old('category', $component->category) == $category ? 'selected' : '' }}>
+                                                    {{ $category }}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                         @error('category')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-
-                                    <!-- Department -->
-                                    <div class="form-group mb-3">
-                                        <label>Department<span class="text-danger"> *</span></label>
-                                        <input type="text" name="department" value="{{ old('department', $component->department) }}" class="form-control" placeholder="Enter department" required>
-                                        @error('department')
                                             <small class="text-danger">{{ $message }}</small>
                                         @enderror
                                     </div>
@@ -78,6 +76,22 @@
                                             <small class="text-danger">{{ $message }}</small>
                                         @enderror
                                     </div>
+
+                                    <!-- Associated Asset (New Field) -->
+                                    <div class="form-group mb-3">
+                                        <label>Associated Asset</label>
+                                        <select name="inventory_id" class="form-control">
+                                            <option value="">None (Independent Component)</option>
+                                            @foreach($assets as $asset)
+                                                <option value="{{ $asset->id }}" {{ (old('inventory_id', $component->inventory_id) == $asset->id) ? 'selected' : '' }}>
+                                                    {{ $asset->item_name }} ({{ $asset->asset_tag }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('inventory_id')
+                                            <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+                                    </div>
                                 </div>
 
                                 <!-- Second Column -->
@@ -91,11 +105,18 @@
                                         @enderror
                                     </div>
 
-                                    <!-- Assigned -->
+                                    <!-- Assigned User Dropdown -->
                                     <div class="form-group mb-3">
-                                        <label>Assigned</label>
-                                        <input type="text" name="assigned" value="{{ old('assigned', $component->assigned) }}" class="form-control" placeholder="Enter assigned to">
-                                        @error('assigned')
+                                        <label>Assigned To</label>
+                                        <select name="users_id" class="form-control">
+                                            <option value="">Not Assigned</option>
+                                            @foreach($users as $user)
+                                                <option value="{{ $user->id }}" {{ old('users_id', $component->users_id) == $user->id ? 'selected' : '' }}>
+                                                    {{ $user->first_name }} {{ $user->last_name }} ({{ $user->department->name ?? 'No Department' }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('users_id')
                                             <small class="text-danger">{{ $message }}</small>
                                         @enderror
                                     </div>
@@ -103,7 +124,7 @@
                                     <!-- Date Purchased -->
                                     <div class="form-group mb-3">
                                         <label>Date Purchased<span class="text-danger"> *</span></label>
-                                        <input type="date" name="date_purchased" value="{{ old('date_purchased', $component->date_purchased ? $component->date_purchased->format('Y-m-d') : '') }}" class="form-control" required>
+                                        <input type="date" name="date_purchased" value="{{ old('date_purchased', $component->date_purchased) }}" class="form-control" required>
                                         @error('date_purchased')
                                             <small class="text-danger">{{ $message }}</small>
                                         @enderror

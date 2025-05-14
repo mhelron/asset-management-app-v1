@@ -13,14 +13,14 @@ class Components extends Model
     protected $fillable = [
         'component_name',
         'category',
-        'department',
         'serial_no',
         'model_no',
         'manufacturer',
-        'assigned',
+        'users_id',
         'date_purchased',
         'purchased_from',
-        'log_note'
+        'log_note',
+        'inventory_id'
     ];
 
     protected $dates = ['date_purchased'];
@@ -28,4 +28,14 @@ class Components extends Model
     protected $casts = [
         'date_purchased' => 'date'
     ];
+
+    public function inventory()
+    {
+        return $this->belongsTo(Inventory::class, 'inventory_id');
+    }
+    
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'users_id');
+    }
 }
