@@ -29,7 +29,7 @@ class CustomFieldsController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $request->validateWithBag('inventoryForm', [
             'name' => 'required|string|max:255',
             'is_required' => 'required|boolean',
             'applies_to' => 'required|array',

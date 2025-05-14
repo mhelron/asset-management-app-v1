@@ -36,6 +36,12 @@
                     <div class="card-body form-container">
                         <form action="{{ route('users.store') }}" method="POST">
                             @csrf
+
+                            <div class="alert alert-info alert-dismissible fade show mt-2">
+                                <i class="bi bi-info-circle me-2"></i>
+                                Please ensure that you have added a department in order to add a user. Click <a href="{{ route('departments.create') }}">here</a> to add a department.
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
                             
                             <!-- Start of row -->
                             <div class="row">

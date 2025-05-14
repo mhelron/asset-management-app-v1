@@ -97,7 +97,7 @@
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="{{ 5 + count($assetCustomFields) }}" class="text-center">No item found</td>
+                                        <td colspan="9" class="text-center">No item found</td>
                                     </tr>
                                     @endforelse
                                 </tbody>

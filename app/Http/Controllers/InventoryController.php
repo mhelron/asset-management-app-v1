@@ -132,7 +132,8 @@ class InventoryController extends Controller
             $existingItem->forceDelete();
         }
         
-        $request->validateWithBag('inventoryForm', [
+        // Prepare validation rules for standard fields
+        $standardRules = [
             'item_name' => 'required|string',
             'category_id' => 'required|exists:categories,id',
             'department_id' => 'nullable|exists:departments,id',
@@ -144,28 +145,40 @@ class InventoryController extends Controller
             'purchased_from' => 'required|string|max:255',
             'asset_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'log_note' => 'nullable|string'
-        ]);
-    
-        // Fetch the category to get its custom fields
-        $category = Category::findOrFail($request->category_id);
-        $categoryCustomFields = CustomField::whereJsonContains('applies_to', 'Asset')->get();
-    
+        ];
+
+        // Get custom fields that apply to Asset
+        $assetCustomFields = CustomField::whereJsonContains('applies_to', 'Asset')->get();
+        
+        // Get custom fields specific to the selected category
+        $categoryCustomFields = [];
+        if ($request->category_id) {
+            $category = Category::find($request->category_id);
+            if ($category) {
+                $customFieldIds = json_decode($category->custom_fields, true) ?? [];
+                $categoryCustomFields = CustomField::whereIn('id', $customFieldIds)->get();
+            }
+        }
+        
+        // Merge both custom field collections
+        $allCustomFields = $assetCustomFields->merge($categoryCustomFields);
+
         // Prepare dynamic validation rules
         $customValidationRules = [];
         $customValidationMessages = [];
-    
-        foreach ($categoryCustomFields as $field) {
+
+        foreach ($allCustomFields as $field) {
             $fieldName = $field->name;
             $rules = [];
             $messages = [];
-    
+
             // Required validation
             if ($field->is_required) {
                 $rules[] = 'required';
                 $messages["custom_fields.{$fieldName}.required"] = 
                     "The {$fieldName} field is required.";
             }
-    
+
             // Type-specific validations
             switch ($field->type) {
                 case 'Text':
@@ -195,7 +208,7 @@ class InventoryController extends Controller
                             break;
                     }
                     break;
-    
+
                 case 'Select':
                     $options = json_decode($field->options, true);
                     if ($options) {
@@ -204,14 +217,14 @@ class InventoryController extends Controller
                             "The selected {$fieldName} is invalid.";
                     }
                     break;
-    
+
                 case 'Checkbox':
                     $rules[] = 'array';
                     $messages["custom_fields.{$fieldName}.array"] = 
                         "The {$fieldName} must be a valid selection.";
                     break;
             }
-    
+
             // Add rules if not empty
             if (!empty($rules)) {
                 $customValidationRules["custom_fields.{$fieldName}"] = $rules;
@@ -222,24 +235,22 @@ class InventoryController extends Controller
                 $customValidationMessages = array_merge($customValidationMessages, $messages);
             }
         }
-    
-        // Perform dynamic validation
-        if (!empty($customValidationRules)) {
-            $validator = Validator::make(
-                $request->all(), 
-                $customValidationRules, 
-                $customValidationMessages
-            );
-    
-            // If validation fails, redirect back with errors
-            if ($validator->fails()) {
-                return redirect()->back()
-                    ->withErrors($validator, 'customFields')
-                    ->withInput();
-            }
+
+        // Merge standard and custom validation rules
+        $allRules = array_merge($standardRules, $customValidationRules);
+        $validator = Validator::make($request->all(), $allRules, $customValidationMessages);
+
+        // If validation fails, redirect back with errors
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator, 'inventoryForm')
+                ->withInput();
         }
-    
+
         try {
+            // Now that validation has passed, we can safely fetch the category
+            $category = Category::findOrFail($request->category_id);
+            
             // Process and save the inventory item
             $customFields = $request->input('custom_fields', []);
             
@@ -256,10 +267,9 @@ class InventoryController extends Controller
 
             // Handle asset image upload
             $imagePath = null;
-                if ($request->hasFile('asset_image')) {
-                    $imagePath = $request->file('asset_image')->store('assets', 'public');
-                }
-
+            if ($request->hasFile('asset_image')) {
+                $imagePath = $request->file('asset_image')->store('assets', 'public');
+            }
 
             $validatedData['asset_tag'] = $this->generateAssetTag();
             
@@ -279,7 +289,7 @@ class InventoryController extends Controller
                 'custom_fields' => $customFields,
                 'status' => 'Active',
             ]);
-    
+
             return redirect()->route('inventory.index')->with('success', 'Item added successfully');
         } catch (\Exception $e) {
             Log::error('Error adding inventory: ' . $e->getMessage());
@@ -290,31 +300,138 @@ class InventoryController extends Controller
     public function edit($id) {
         $inventoryItem = Inventory::with('category')->findOrFail($id);
         $categories = Category::pluck('category', 'id');
+        $departments = Department::all();
+        $users = User::all();
         $assetCustomFields = CustomField::whereJsonContains('applies_to', 'Asset')->get();
         
-        return view('inventory.edit', compact('inventoryItem', 'categories', 'assetCustomFields', 'id'));
+        return view('inventory.edit', compact('inventoryItem', 'categories', 'assetCustomFields', 'id', 'departments', 'users'));
     }
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $inventoryItem = Inventory::findOrFail($id);
+        
+        // Prepare validation rules for standard fields
+        $standardRules = [
             'item_name' => 'required|string',
             'category_id' => 'required|exists:categories,id',
-            'department_id' => 'required|exists:departments,id',
-            'users_id' => 'required|exists:users,id',
-            'asset_tag' => 'required|unique:inventories,serial_no',
-            'serial_no' => 'required|unique:components,serial_no',
+            'department_id' => 'nullable|exists:departments,id',
+            'users_id' => 'nullable|exists:users,id',
+            'asset_tag' => 'required',
+            'serial_no' => 'required|unique:inventories,serial_no,'.$id,
             'model_no' => 'required|string|max:255',
             'manufacturer' => 'required|string|max:255',
-            'assigned' => 'nullable|string|max:255',
             'date_purchased' => 'required|date',
             'purchased_from' => 'required|string|max:255',
+            'asset_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'log_note' => 'nullable|string'
-        ]);
+        ];
+
+        // Get custom fields that apply to Asset
+        $assetCustomFields = CustomField::whereJsonContains('applies_to', 'Asset')->get();
+        
+        // Get custom fields specific to the selected category
+        $categoryCustomFields = [];
+        if ($request->category_id) {
+            $category = Category::find($request->category_id);
+            if ($category) {
+                $customFieldIds = json_decode($category->custom_fields, true) ?? [];
+                $categoryCustomFields = CustomField::whereIn('id', $customFieldIds)->get();
+            }
+        }
+        
+        // Merge both custom field collections
+        $allCustomFields = $assetCustomFields->merge($categoryCustomFields);
+
+        // Prepare dynamic validation rules
+        $customValidationRules = [];
+        $customValidationMessages = [];
+
+        foreach ($allCustomFields as $field) {
+            $fieldName = $field->name;
+            $rules = [];
+            $messages = [];
+
+            // Required validation
+            if ($field->is_required) {
+                $rules[] = 'required';
+                $messages["custom_fields.{$fieldName}.required"] = 
+                    "The {$fieldName} field is required.";
+            }
+
+            // Type-specific validations
+            switch ($field->type) {
+                case 'Text':
+                    // Add specific text type validations
+                    switch ($field->text_type) {
+                        case 'Email':
+                            $rules[] = 'email';
+                            $messages["custom_fields.{$fieldName}.email"] = 
+                                "The {$fieldName} must be a valid email address.";
+                            break;
+                        case 'Numeric':
+                            $rules[] = 'numeric';
+                            $messages["custom_fields.{$fieldName}.numeric"] = 
+                                "The {$fieldName} must be a number.";
+                            break;
+                        case 'Date':
+                            $rules[] = 'date';
+                            $messages["custom_fields.{$fieldName}.date"] = 
+                                "The {$fieldName} must be a valid date.";
+                            break;
+                        case 'Custom':
+                            if ($field->custom_regex) {
+                                $rules[] = "regex:{$field->custom_regex}";
+                                $messages["custom_fields.{$fieldName}.regex"] = 
+                                    "The {$fieldName} format is invalid.";
+                            }
+                            break;
+                    }
+                    break;
+
+                case 'Select':
+                    $options = json_decode($field->options, true);
+                    if ($options) {
+                        $rules[] = 'in:' . implode(',', $options);
+                        $messages["custom_fields.{$fieldName}.in"] = 
+                            "The selected {$fieldName} is invalid.";
+                    }
+                    break;
+
+                case 'Checkbox':
+                    $rules[] = 'array';
+                    $messages["custom_fields.{$fieldName}.array"] = 
+                        "The {$fieldName} must be a valid selection.";
+                    break;
+            }
+
+            // Add rules if not empty
+            if (!empty($rules)) {
+                $customValidationRules["custom_fields.{$fieldName}"] = $rules;
+            }
+            
+            // Add corresponding error messages
+            if (!empty($messages)) {
+                $customValidationMessages = array_merge($customValidationMessages, $messages);
+            }
+        }
+
+        // Merge standard and custom validation rules
+        $allRules = array_merge($standardRules, $customValidationRules);
+        $validator = Validator::make($request->all(), $allRules, $customValidationMessages);
+
+        // If validation fails, redirect back with errors
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator, 'inventoryForm')
+                ->withInput();
+        }
 
         try {
-            $inventoryItem = Inventory::findOrFail($id);
-            $customFields = $inventoryItem->custom_fields ?? [];
+            // Get existing custom fields
+            $customFields = is_string($inventoryItem->custom_fields) 
+                ? json_decode($inventoryItem->custom_fields, true) 
+                : ($inventoryItem->custom_fields ?? []);
 
             // Update with new form values
             if ($request->has('custom_fields')) {
@@ -326,7 +443,7 @@ class InventoryController extends Controller
             // Handle file uploads
             if ($request->hasFile('custom_fields_files')) {
                 foreach ($request->file('custom_fields_files') as $field => $file) {
-                    $path = $file->store('uploads/inventory');
+                    $path = $file->store('inventory', 'public');
                     $customFields[$field] = [
                         'path' => $path, 
                         'original_name' => $file->getClientOriginalName()
@@ -334,15 +451,32 @@ class InventoryController extends Controller
                 }
             }
             
-            // Update the inventory item
+            // Handle asset image upload
+            $imagePath = $inventoryItem->image_path;
+            if ($request->hasFile('asset_image')) {
+                $imagePath = $request->file('asset_image')->store('assets', 'public');
+            }
+            
+            // Update the inventory item with all fields
             $inventoryItem->update([
                 'item_name' => $request->item_name,
                 'category_id' => $request->category_id,
+                'department_id' => $request->department_id,
+                'users_id' => $request->users_id,
+                'asset_tag' => $request->asset_tag,
+                'serial_no' => $request->serial_no,
+                'model_no' => $request->model_no,
+                'manufacturer' => $request->manufacturer,
+                'date_purchased' => $request->date_purchased,
+                'purchased_from' => $request->purchased_from,
+                'image_path' => $imagePath,
+                'log_note' => $request->log_note,
                 'custom_fields' => $customFields,
             ]);
 
             return redirect()->route('inventory.index')->with('success', 'Item updated successfully');
         } catch (\Exception $e) {
+            Log::error('Error updating inventory: ' . $e->getMessage());
             return redirect()->route('inventory.edit', $id)->with('error', 'An error occurred: ' . $e->getMessage());
         }
     }

@@ -218,7 +218,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const assetCustomFields = {!! json_encode($assetCustomFields) !!};
-        const validationErrors = {!! $errors->customFields ? $errors->customFields->toJson() : '{}' !!};
+        const validationErrors = {!! $errors->inventoryForm ? $errors->inventoryForm->toJson() : '{}' !!};
         // Get old values directly from Laravel's old() helper
         const oldValues = {!! json_encode(old()) !!};
 
@@ -260,18 +260,37 @@
                 switch(field.type) {
                     case 'Text':
                         input = document.createElement('input');
-                        input.type = field.text_type ? field.text_type.toLowerCase() : 'text';
-                        input.placeholder = `Enter ${field.name}`; 
                         
-                        if (field.text_type === 'Image') {
+                        // Special handling for Email type
+                        if (field.text_type === 'Email') {
+                            input.type = 'text'; // Use text instead of email to prevent browser validation
+                            
+                            // Add event listener to validate email format on input
+                            input.addEventListener('input', function() {
+                                validateEmail(this, field.name);
+                            });
+                        } else if (field.text_type === 'Image') {
                             input.type = 'file';
                             input.name = `custom_fields_files[${field.name}]`;
                             input.accept = 'image/*';
                         } else {
+                            input.type = field.text_type ? field.text_type.toLowerCase() : 'text';
+                            input.name = `custom_fields[${field.name}]`;
+                        }
+                        
+                        input.placeholder = `Enter ${field.name}`;
+                        
+                        // Set name for non-image fields
+                        if (field.text_type !== 'Image') {
                             input.name = `custom_fields[${field.name}]`;
                             // Set old value for text inputs
                             if (oldValue !== null) {
                                 input.value = oldValue;
+                                
+                                // Trigger validation for pre-filled email values
+                                if (field.text_type === 'Email') {
+                                    setTimeout(() => validateEmail(input, field.name), 100);
+                                }
                             }
                         }
                         break;
@@ -381,6 +400,26 @@
                         }
                         break;
                     
+                    case 'Email':
+                        input = document.createElement('input');
+                        input.type = 'text'; // Use text instead of email to prevent browser validation
+                        input.name = `custom_fields[${field.name}]`;
+                        input.className = 'form-control';
+                        input.placeholder = `Enter ${field.name}`;
+                        
+                        // Add event listener to validate email format on input
+                        input.addEventListener('input', function() {
+                            validateEmail(this, field.name);
+                        });
+                        
+                        // Set old value if exists
+                        if (oldValue !== null) {
+                            input.value = oldValue;
+                            // Trigger validation for pre-filled values
+                            setTimeout(() => validateEmail(input, field.name), 100);
+                        }
+                        break;
+                    
                     default:
                         input = document.createElement('input');
                         input.type = 'text';
@@ -392,9 +431,10 @@
                         }
                 }
                 
-                // Apply form control class and handle validation
+                // Apply form control class and ensure no required attribute
                 if (input && input.tagName && input.tagName !== 'DIV') {
                     input.className = 'form-control mb-3';
+                    input.required = false; // Explicitly set required to false
                 }
                 
                 // Append input to field group
@@ -502,7 +542,7 @@ document.addEventListener('DOMContentLoaded', function() {
         dynamicFieldsContainer.appendChild(rowDiv);
         
         // Get validation errors from the page (if any)
-        const validationErrors = {!! $errors->customFields ? $errors->customFields->toJson() : '{}' !!};
+        const validationErrors = {!! $errors->inventoryForm ? $errors->inventoryForm->toJson() : '{}' !!};
         // Get old values 
         const oldValues = {!! json_encode(old()) !!};
         
@@ -532,11 +572,26 @@ document.addEventListener('DOMContentLoaded', function() {
             // Determine old value if it exists
             const oldValue = oldValues.custom_fields && oldValues.custom_fields[field.name] ? 
                 oldValues.custom_fields[field.name] : null;
+                
+            // Create error key for this field
+            const errorKey = `custom_fields.${field.name}`;
             
             switch(field.type) {
                 case 'Text':
                     input = document.createElement('input');
-                    input.type = field.text_type ? field.text_type.toLowerCase() : 'text';
+                    
+                    // Check if this is an email field and handle special validation
+                    if (field.text_type === 'Email') {
+                        input.type = 'text'; // Use text instead of email to prevent browser validation
+                        
+                        // Add event listener to validate email format on input
+                        input.addEventListener('input', function() {
+                            validateEmail(this, field.name);
+                        });
+                    } else {
+                        input.type = field.text_type ? field.text_type.toLowerCase() : 'text';
+                    }
+                    
                     input.name = `custom_fields[${field.name}]`;
                     input.className = 'form-control';
                     input.placeholder = `Enter ${field.name}`;
@@ -544,6 +599,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Set old value if exists
                     if (oldValue !== null) {
                         input.value = oldValue;
+                        
+                        // Trigger validation for pre-filled email values
+                        if (field.text_type === 'Email') {
+                            setTimeout(() => validateEmail(input, field.name), 100);
+                        }
                     }
                     break;
                     
@@ -646,7 +706,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
             }
             
-            // Remove required attribute - we'll handle validation server-side
+            // Never set required attribute - we'll handle validation server-side
             if (input.tagName !== 'DIV') {
                 input.required = false;
             }
@@ -654,7 +714,6 @@ document.addEventListener('DOMContentLoaded', function() {
             fieldGroup.appendChild(input);
             
             // Add error message display if needed
-            const errorKey = `custom_fields.${field.name}`;
             if (validationErrors[errorKey]) {
                 const errorSpan = document.createElement('small');
                 errorSpan.className = 'text-danger';
